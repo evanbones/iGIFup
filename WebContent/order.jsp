@@ -3,9 +3,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>YOUR NAME Grocery Order Processing</title>
+<title>iGifUp Order Processing</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+    h1 {
+        color: #333;
+    }
+    table {
+        border-collapse: collapse;
+        margin: 20px 0;
+        width: 100%;
+        max-width: 800px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    th {
+        background-color: #4CAF50;
+        color: white;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    .error {
+        color: #f44336;
+        font-weight: bold;
+        padding: 15px;
+        background-color: #ffebee;
+        border-left: 4px solid #f44336;
+        margin: 20px 0;
+    }
+    .success {
+        color: #4CAF50;
+        font-weight: bold;
+        padding: 15px;
+        background-color: #e8f5e9;
+        border-left: 4px solid #4CAF50;
+        margin: 20px 0;
+    }
+    .order-summary {
+        background-color: #e7f3e7;
+        padding: 15px;
+        border-radius: 4px;
+        margin: 20px 0;
+    }
+</style>
 </head>
 <body>
+
+<%@ include file="header.jsp" %>
 
 <% 
 String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
@@ -17,31 +68,48 @@ int orderId = 0;
 Connection con = null;
 
 try {
-    // get customer id 
+    // Get customer id and password
     String custId = request.getParameter("customerId");
+    String password = request.getParameter("password");
+    
     @SuppressWarnings({"unchecked"})
     HashMap<String, ArrayList<Object>> productList = (HashMap<String, ArrayList<Object>>) session.getAttribute("productList");
 
-    // show error message if shopping cart is empty
+    // Check if shopping cart is empty
     if (productList == null || productList.isEmpty()) {
-        out.println("<h1>Error</h1>");
+        out.println("<div class='error'>");
+        out.println("<h2>Error: Empty Shopping Cart</h2>");
         out.println("<p>Your shopping cart is empty. Please <a href='listprod.jsp'>continue shopping</a>.</p>");
-        return; // Stop processing the page
+        out.println("</div>");
+        return;
     }
     
-    // validate customer's id
+    // Validate customer ID
     int numericCustId = 0;
     if (custId == null || custId.trim().isEmpty()) {
-        out.println("<h1>Error</h1>");
-        out.println("<p>You must enter a customer ID.</p>");
+        out.println("<div class='error'>");
+        out.println("<h2>Error: Missing Customer ID</h2>");
+        out.println("<p>You must enter a customer ID. <a href='checkout.jsp'>Go back</a></p>");
+        out.println("</div>");
         return;
     }
     
     try {
         numericCustId = Integer.parseInt(custId);
     } catch (NumberFormatException e) {
-        out.println("<h1>Error</h1>");
-        out.println("<p>Customer ID must be a valid number.</p>");
+        out.println("<div class='error'>");
+        out.println("<h2>Error: Invalid Customer ID</h2>");
+        out.println("<p>Customer ID must be a valid number. <a href='checkout.jsp'>Go back</a></p>");
+        out.println("</div>");
+        return;
+    }
+
+    // Validate password
+    if (password == null || password.trim().isEmpty()) {
+        out.println("<div class='error'>");
+        out.println("<h2>Error: Missing Password</h2>");
+        out.println("<p>You must enter a password. <a href='checkout.jsp'>Go back</a></p>");
+        out.println("</div>");
         return;
     }
 
@@ -50,33 +118,37 @@ try {
     con = DriverManager.getConnection(url, uid, pw);
 
     // customer id exists in the database.
-    String sqlValidateCust = "SELECT customerId FROM customer WHERE customerId = ?";
+    String sqlValidateCust = "SELECT customerId, firstName, lastName FROM customer WHERE customerId = ? AND password = ?";
     boolean customerExists = false;
+    String customerName = "";
     
     try (PreparedStatement pstmtCust = con.prepareStatement(sqlValidateCust)) {
         pstmtCust.setInt(1, numericCustId);
+        pstmtCust.setString(2, password);
         try (ResultSet rsCust = pstmtCust.executeQuery()) {
             if (rsCust.next()) {
                 customerExists = true;
+                customerName = rsCust.getString("firstName") + " " + rsCust.getString("lastName");
             }
         }
     }
 
     if (!customerExists) {
-        out.println("<h1>Error</h1>");
-        out.println("<p>Customer ID " + numericCustId + " does not exist in our records.</p>");
+        out.println("<div class='error'>");
+        out.println("<h2>Error: Invalid Credentials</h2>");
+        out.println("<p>Customer ID " + numericCustId + " does not exist or password is incorrect. <a href='checkout.jsp'>Go back</a></p>");
+        out.println("</div>");
         return;
     }
     
     // if we get here, the customer ID is valid and the cart is not empty
-    
+
     // start a transaction - all operations must work or none are executed
     con.setAutoCommit(false);
     
     // insert into ordersummary table and retrieve auto-generated id
     String sqlInsertOrder = "INSERT INTO orderSummary (customerId, orderDate, totalAmount) VALUES (?, GETDATE(), ?)";
     
-    // insert with a total of 0.0 and will update it later.
     try (PreparedStatement pstmt = con.prepareStatement(sqlInsertOrder, Statement.RETURN_GENERATED_KEYS)) {
         pstmt.setInt(1, numericCustId);
         pstmt.setDouble(2, 0.0); // Placeholder total
@@ -125,13 +197,20 @@ try {
     con.commit();
     
     // display the order information
+    out.println("<div class='success'>");
     out.println("<h1>Order Complete</h1>");
-    out.println("<p>Thank you! Your order has been placed.</p>");
+    out.println("<p>Thank you for your order, " + customerName + "!</p>");
+    out.println("</div>");
+    
+    out.println("<div class='order-summary'>");
     out.println("<p><b>Order ID:</b> " + orderId + "</p>");
     out.println("<p><b>Customer ID:</b> " + numericCustId + "</p>");
+    out.println("<p><b>Customer Name:</b> " + customerName + "</p>");
+    out.println("</div>");
+    
     out.println("<h3>Order Details:</h3>");
     
-    out.println("<table border='1' cellpadding='5'>");
+    out.println("<table>");
     out.println("<tr><th>Product Name</th><th>Quantity</th><th>Price</th><th>Subtotal</th></tr>");
     
     NumberFormat currFormat = NumberFormat.getCurrencyInstance();
@@ -149,37 +228,45 @@ try {
 
         out.println("<tr>");
         out.println("<td>" + name + "</td>");
-        out.println("<td>" + qty + "</td>");
-        out.println("<td>" + currFormat.format(price) + "</td>");
-        out.println("<td>" + currFormat.format(subtotal) + "</td>");
+        out.println("<td align='center'>" + qty + "</td>");
+        out.println("<td align='right'>" + currFormat.format(price) + "</td>");
+        out.println("<td align='right'>" + currFormat.format(subtotal) + "</td>");
         out.println("</tr>");
     }
     
+    out.println("<tr style='font-weight: bold; background-color: #4CAF50; color: white;'>");
+    out.println("<td colspan='3' align='right'>Order Total:</td>");
+    out.println("<td align='right'>" + currFormat.format(totalOrderAmount) + "</td>");
+    out.println("</tr>");
     out.println("</table>");
-    out.println("<h3>Order Total: " + currFormat.format(totalOrderAmount) + "</h3>");
+
+    out.println("<p><a href='listprod.jsp'>Continue Shopping</a></p>");
 
     // clear the shopping cart
     session.removeAttribute("productList");
 
 } catch (SQLException e) {
-    // if anything went wrong, roll back the transaction
+        // if anything went wrong, roll back the transaction
     if (con != null) {
         try {
             con.rollback();
         } catch (SQLException ex) {
-            out.println("Error during transaction rollback: " + ex.getMessage());
+            out.println("<p>Error during transaction rollback: " + ex.getMessage() + "</p>");
         }
     }
-    out.println("<h1>Database Error</h1>");
+    out.println("<div class='error'>");
+    out.println("<h2>Database Error</h2>");
     out.println("<p>Your order could not be placed due to a database error.</p>");
     out.println("<pre>" + e.toString() + "</pre>");
+    out.println("</div>");
     e.printStackTrace(new java.io.PrintWriter(out));
     
 } catch (Exception e) {
-    // Catch other errors (e.g., ClassNotFound, parsing errors)
-    out.println("<h1>Application Error</h1>");
+    out.println("<div class='error'>");
+    out.println("<h2>Application Error</h2>");
     out.println("<p>Your order could not be placed due to an application error.</p>");
     out.println("<pre>" + e.toString() + "</pre>");
+    out.println("</div>");
     e.printStackTrace(new java.io.PrintWriter(out));
     
 } finally {
@@ -193,5 +280,5 @@ try {
     }
 }
 %>
-</BODY>
-</HTML>
+</body>
+</html>
