@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>YOUR NAME Grocery</title>
+<title>iGifUp Grocery</title>
 </head>
 <body>
 
@@ -15,9 +15,9 @@
 <input type="submit" value="Submit"><input type="reset" value="Reset"> (Leave blank for all products)
 </form>
 
-<% // Get product name to search for
+<% 
 String name = request.getParameter("productName");
-		
+
 //Note: Forces loading of SQL Server driver
 try
 {	// Load driver class
@@ -28,20 +28,65 @@ catch (java.lang.ClassNotFoundException e)
 	out.println("ClassNotFoundException: " +e);
 }
 
-// Variable name now contains the search string the user entered
-// Use it to build a query and print out the resultset.  Make sure to use PreparedStatement!
+String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+String uid = "sa";
+String pw = "304#sa#pw";
 
-// Make the connection
+String sql = "";
 
-// Print out the ResultSet
+// If 'name' is empty or null, select all products.
+if (name == null || name.trim().isEmpty()) {
+    sql = "SELECT productId, productName, productPrice FROM product";
+} else {
+    // Otherwise, select products matching the name.
+    sql = "SELECT productId, productName, productPrice FROM product WHERE productName LIKE ?";
+}
 
-// For each product create a link of the form
-// addcart.jsp?id=productId&name=productName&price=productPrice
-// Close connection
+try (
+    Connection con = DriverManager.getConnection(url, uid, pw);
+    
+    PreparedStatement pstmt = con.prepareStatement(sql)
+) {
+    
+    if (name != null && !name.trim().isEmpty()) {
+        pstmt.setString(1, "%" + name + "%");
+    }
 
-// Useful code for formatting currency values:
-// NumberFormat currFormat = NumberFormat.getCurrencyInstance();
-// out.println(currFormat.format(5.0);	// Prints $5.00
+    try (ResultSet rs = pstmt.executeQuery()) {
+
+        out.println("<h2>Product List</h2>");
+        out.println("<table border='1' cellpadding='5'>");
+        out.println("<tr><th>Product</th><th>Price</th><th>Add to Cart</th></tr>");
+        
+        NumberFormat currFormat = NumberFormat.getCurrencyInstance();
+        
+        while (rs.next()) {
+       
+            int productId = rs.getInt("productId");
+            String productName = rs.getString("productName");
+            double price = rs.getDouble("productPrice");
+            
+            String formattedPrice = currFormat.format(price);
+            
+            String encodedName = URLEncoder.encode(productName, "UTF-8");
+            String link = "addcart.jsp?id=" + productId + "&name=" + encodedName + "&price=" + price;
+            
+            out.println("<tr>");
+            out.println("<td>" + productName + "</td>");
+            out.println("<td>" + formattedPrice + "</td>");
+            out.println("<td><a href='" + link + "'>Add</a></td>");
+            out.println("</tr>");
+        }
+        
+        out.println("</table>");
+    }
+    
+} catch (SQLException e) {
+    out.println("<h3>Error connecting to or querying the database.</h3>");
+    out.println("<pre>" + e.toString() + "</pre>");
+} catch (Exception e) {
+    out.println("An error occurred: " + e.toString());
+}
 %>
 
 </body>
