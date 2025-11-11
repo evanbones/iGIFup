@@ -31,7 +31,7 @@
 </style>
 
 <div class="site-header">
-    <h1>iGifUp Grocery Store</h1>
+    <h1>iGifUp</h1>
     <nav class="site-nav">
         <a href="shop.jsp">Home</a>
         <a href="listprod.jsp">Products</a>

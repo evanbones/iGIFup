@@ -46,7 +46,7 @@ body {
 
 <div class="main-content">
     <div class="welcome-section">
-        <h2>Welcome to iGifUp Grocery Store</h2>
+        <h2>Welcome to iGifUp</h2>
         <p></p>
     </div>
 </div>
