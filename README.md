@@ -42,8 +42,8 @@ Through simple, pain-free, and fast digital downloads, iGIFup bridges past and p
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/evanbones/iGIFup-Online-Storefront/
-cd iGIFup-Online-Storefront
+git clone https://github.com/evanbones/iGIFup
+cd iGIFup
 ```
 
 2. Start the application using Docker Compose:
