@@ -4,123 +4,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet", href="css/listprod.css">
 <title>iGifUp Product Catalog</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-        background-color: #f5f5f5;
-    }
-    h1, h2 {
-        color: #333;
-    }
-    .search-container {
-        background-color: white;
-        padding: 25px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-bottom: 30px;
-    }
-    .search-form {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-    }
-    .search-form input[type="text"],
-    .search-form select {
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-    .search-form input[type="text"] {
-        flex: 1;
-        min-width: 250px;
-    }
-    .search-form select {
-        min-width: 200px;
-    }
-    .search-form input[type="submit"],
-    .search-form input[type="reset"] {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: bold;
-    }
-    .search-form input[type="submit"] {
-        background-color: #4CAF50;
-        color: white;
-    }
-    .search-form input[type="submit"]:hover {
-        background-color: #45a049;
-    }
-    .search-form input[type="reset"] {
-        background-color: #f44336;
-        color: white;
-    }
-    .search-form input[type="reset"]:hover {
-        background-color: #da190b;
-    }
-    table {
-        border-collapse: collapse;
-        width: 100%;
-        background-color: white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    th, td {
-        border: 1px solid #ddd;
-        padding: 12px;
-        text-align: left;
-    }
-    th {
-        background-color: #4CAF50;
-        color: white;
-        font-weight: bold;
-    }
-    tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-    tr:hover {
-        background-color: #f1f1f1;
-    }
-    .add-cart-link {
-        display: inline-block;
-        padding: 6px 12px;
-        background-color: #2196F3;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-        font-weight: bold;
-    }
-    .add-cart-link:hover {
-        background-color: #0b7dda;
-    }
-    .product-name {
-        font-weight: 500;
-        color: #333;
-    }
-    .price {
-        font-weight: bold;
-        color: #4CAF50;
-    }
-    .filter-note {
-        color: #666;
-        font-size: 13px;
-        margin-top: 10px;
-    }
-    .no-products {
-        text-align: center;
-        padding: 40px;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-</style>
 </head>
 <body>
+<div class="page-container">
 
 <%@ include file="header.jsp" %>
 
@@ -222,14 +110,14 @@ try (Connection con = DriverManager.getConnection(url, uid, pw);
                 if (category == null) category = "Uncategorized";
                 
                 String formattedPrice = currFormat.format(price);
-                String encodedName = URLEncoder.encode(productName, "UTF-8");
-                String link = "addcart.jsp?id=" + productId + "&name=" + encodedName + "&price=" + price;
+                String productLink = "product.jsp?id=" + productId;
+                String addToCartLink = "addcart.jsp?id=" + productId + "&name=" + URLEncoder.encode(productName, "UTF-8") + "&price=" + price;
                 
                 out.println("<tr>");
-                out.println("<td class='product-name'>" + productName + "</td>");
+                out.println("<td class='product-name'><a href='" + productLink + "'>" + productName + "</a></td>");
                 out.println("<td>" + category + "</td>");
                 out.println("<td class='price'>" + formattedPrice + "</td>");
-                out.println("<td align='center'><a href='" + link + "' class='add-cart-link'>Add to Cart</a></td>");
+                out.println("<td align='center'><a href='" + addToCartLink + "' class='add-cart-link'>Add to Cart</a></td>");
                 out.println("</tr>");
             }
             
@@ -250,6 +138,6 @@ try (Connection con = DriverManager.getConnection(url, uid, pw);
     out.println("</div>");
 }
 %>
-
+</div>
 </body>
 </html>

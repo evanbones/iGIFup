@@ -5,47 +5,10 @@
 <html>
 <head>
 <title>iGifUp Order List</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-    }
-    h1 {
-        color: #333;
-    }
-    table {
-        border-collapse: collapse;
-        margin-bottom: 30px;
-        width: 100%;
-    }
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-    th {
-        background-color: #4CAF50;
-        color: white;
-    }
-    tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-    .order-header {
-        background-color: #e7f3e7;
-        font-weight: bold;
-    }
-    .product-table {
-        margin-left: 20px;
-        width: 95%;
-    }
-    .error {
-        color: red;
-        font-weight: bold;
-    }
-</style>
+<link rel="stylesheet" href="css/listprod.css">
 </head>
 <body>
-
+<div class="page-container">
 <%@ include file="header.jsp" %>
 
 <h1>Order List</h1>
@@ -143,6 +106,6 @@ try (Connection con = DriverManager.getConnection(url, uid, pw)) {
     e.printStackTrace();
 }
 %>
-
+</div>
 </body>
 </html>
