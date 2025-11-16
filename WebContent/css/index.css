@@ -1,0 +1,77 @@
+
+body {
+    font-family: "Comic Sans MS", "Papyrus", cursive;
+    background: url("../img/blue_tiles.jpg") repeat;
+    color: #00FF00;
+    text-align: center; 
+}
+
+.page-container {
+    width: 65%;
+    max-width: 1100px;
+    margin: 40px auto;
+}
+
+
+.main-content {
+    width: 85%;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 25px;
+
+    background: linear-gradient(135deg, #330066, #5800cc 40%, #9900ff 90%);
+    border: 8px double #ffcc00;
+    border-radius: 20px;
+    box-shadow: 0 0 30px #ff00ff, 0 0 40px cyan;
+}
+
+
+.welcome-section h2 {
+    font-size: 38px;
+    margin-bottom: 10px;
+    color: #ffff33;
+    text-shadow: 2px 2px 5px #ff00ff;
+}
+
+.welcome-section p {
+    font-size: 20px;
+    margin-top: 5px;
+    color: #ccffcc;
+}
+
+
+.button-container {
+    margin-top: 40px;
+}
+
+
+.button-container a {
+    padding: 10px 20px;
+    border: 3px outset #fff;
+    background: linear-gradient(#ff00ff, #8200ff);
+    color: yellow;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+}
+
+.button-container a:hover {
+    background: linear-gradient(#00ffff, #0066aa);
+    color: black;
+    border: 3px inset white;
+}
+
+.header-bar {
+    background: linear-gradient(to bottom, #99ccff, #3366cc);
+    padding: 15px;
+    border-bottom: 4px solid #003399;
+    box-shadow: 0 0 15px #00ffff;
+}
+
+.header-bar h1 {
+    margin: 0;
+    color: #ffff66;
+    text-shadow: 2px 2px 5px #000;
+    font-size: 32px;
+}

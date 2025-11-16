@@ -1,0 +1,60 @@
+ .site-header {
+    background: linear-gradient(90deg, #16b696, #118bc9, #c011c0);
+    padding: 20px;
+    margin: -20px -20px 20px -20px;
+
+    border-bottom: 5px double #ffffff;
+    border-top: 5px double #ffffff;
+    box-shadow: 0 0 15px #ff00ff, 0 0 8px #00ffff inset;
+
+    text-align: center;
+    font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+
+    position: relative;
+    overflow: visible;
+
+    display: flex;                 
+    justify-content: space-between;
+    align-items: center;           
+}
+
+.site-header h1 {
+    margin: 5px 0 15px 0;
+    font-size: 40px;
+    color: #ffffff;
+    text-shadow: 3px 3px 0 #0000aa, 0 0 10px #ff00ff;
+
+    animation: wiggle 3s infinite ease-in-out;
+}
+
+@keyframes wiggle {
+    0% { transform: rotate(-1deg); }
+    50% { transform: rotate(1deg); }
+    100% { transform: rotate(-1deg); }
+}
+
+.site-nav {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.site-nav a {
+     display: inline-block;
+        padding: 12px 30px;
+        text-decoration: none;
+        border: 3px outset white;
+        background: linear-gradient(#ff00ff, #990099);
+        color: yellow !important;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px black;
+        margin: 5px;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.site-nav a:hover {
+    transform: scale(1.1);
+    filter: brightness(1.3);
+}

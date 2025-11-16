@@ -1,0 +1,144 @@
+body {
+    font-family: "Comic Sans MS", "Trebuchet MS", cursive;
+    background: url("../img/blue_tiles.jpg") repeat;
+    color: #00ffcc;
+    text-align: center;
+}
+
+.page-container {
+    width: 65%;
+    max-width: 1100px;
+    margin: 40px auto;
+}
+
+h1, h2 {
+    color: #ffea00;
+    text-shadow: 0 0 8px #ff00ff, 0 0 14px cyan;
+    font-weight: bold;
+}
+
+.search-container {
+    padding: 25px;
+    margin: 20px auto;
+    background: linear-gradient(135deg, #150050, #3e0099 60%, #8200ff);
+    border: 6px groove #00ffff;
+    border-radius: 18px;
+    box-shadow: 0 0 25px cyan, inset 0 0 12px #ff00ff;
+    color: #ffe600;
+}
+
+.search-form input[type="text"],
+.search-form select {
+    padding: 12px;
+    border: 3px inset #00ffff;
+    border-radius: 10px;
+    background: #000022;
+    color: #00ffea;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-form input::placeholder {
+    color: #66ffee;
+}
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.search-form input[type="submit"],
+.search-form input[type="reset"] {
+    padding: 10px 20px;
+    border: 3px outset #fff;
+    background: linear-gradient(#ff00ff, #8200ff);
+    color: yellow;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+}
+
+.search-form input[type="submit"]:hover,
+.search-form input[type="reset"]:hover {
+    background: linear-gradient(#00ffff, #0066aa);
+    color: black;
+    border: 3px inset white;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+    background: rgba(0,0,40,0.8);
+    border: 5px ridge #00ffff;
+    box-shadow: 0 0 25px cyan, inset 0 0 20px #ff00ff;
+    color: #eaffff;
+}
+
+th {
+    background: linear-gradient(90deg, #ff00ff, #9900ff);
+    border-bottom: 4px solid cyan;
+    color: yellow;
+    font-weight: bold;
+    padding: 14px;
+    text-shadow: 0 0 4px black;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px dashed #66ffff;
+    color: #c3f9ff;
+}
+
+tr:nth-child(even) {
+    background: rgba(0,0,60,0.5);
+}
+
+tr:hover {
+    background: rgba(0,255,255,0.3);
+}
+
+.product-name a {
+    color: #00ffea;
+    font-weight: bold;
+    text-decoration: none;
+    text-shadow: none;
+}
+
+.product-name a:hover {
+    color: yellow;
+    text-shadow: 0 0 6px #ff00ff;
+}
+
+.add-cart-link {
+    display: inline-block;
+    padding: 8px 14px;
+    background: linear-gradient(#ff00ff, #9900cc);
+    border: 3px outset white;
+    color: yellow;
+    text-decoration: none;
+    border-radius: 8px;
+    text-shadow: 1px 1px 2px black;
+    font-weight: bold;
+}
+
+.add-cart-link:hover {
+    background: linear-gradient(#00ffee, #0088aa);
+    border: 3px inset white;
+    color: black;
+}
+
+.no-products {
+    margin: 40px auto;
+    padding: 30px;
+    background: rgba(20, 0, 40, 0.85);
+    border: 6px groove #ff00ff;
+    border-radius: 15px;
+    box-shadow: 0 0 25px magenta;
+    color: yellow;
+    font-size: 18px;
+    width: 70%;
+}
