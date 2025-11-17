@@ -3,8 +3,8 @@
 
 <head>
 	<title>Customer Page</title>
+	<link rel="stylesheet" href="css/listprod.css">
 </head>
-<link rel="stylesheet" href="css/listprod.css">
 
 <body>
 	<div class="page-container">
@@ -16,11 +16,6 @@
 		<%  
 		// ensure user is logged in 
 		String userName = (String) session.getAttribute("authenticatedUser");
-		if (userName == null) { 
-			out.println("<p><b>Error:</b> You must be logged in to view this page.</p>");
-			return;
-		}
-
 		String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
 		String uid = "sa";
 		String pw = "304#sa#pw";
