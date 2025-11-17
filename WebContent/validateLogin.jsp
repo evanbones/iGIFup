@@ -42,7 +42,7 @@
 
 			if(rs.next())
 			{
-				retStr = rs.getString("userId");
+				retStr = rs.getString("userid");
 			}
 			rs.close();
 			pstmt.close();	
