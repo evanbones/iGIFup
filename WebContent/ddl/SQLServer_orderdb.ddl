@@ -154,13 +154,13 @@ INSERT INTO category(categoryName) VALUES ('Grains/Cereals');
 INSERT INTO category(categoryName) VALUES ('Miscellaneous');
 
 INSERT INTO product (productName, categoryId, productDesc, productPrice, productImageURL) VALUES
-('Atomic Structure', 9, 'Science rules! A sweet spinning atom for your science page.', 9.99, 'img/1.gif'),
+('Crystal Lattice', 9, 'Science rules! A sweet spinning atom for your science page.', 9.99, 'img/1.gif'),
 ('@ Symbol', 9, 'The future of communication!', 7.77, 'img/2.gif'),
-('BBC Micro', 9, 'It may be micro, but it''s still a powerhouse.', 11.23, 'img/3.gif'),
+('Computer', 9, 'It''s a powerhouse, hitting clock speeds of 2MHz!', 11.23, 'img/3.gif'),
 ('Bomb', 9, 'It''s the bomb!', 80.08, 'img/4.gif'),
 ('Book', 9, 'Train your brain! Get off the Internet!', 8.88, 'img/5.gif'),
 ('Cactus', 9, 'Youch, it''s sharp! A desert vibe for your homepage.', 6.66, 'img/6.gif'),
-('Cat', 9, 'Very cute.', 12.12, 'img/7.gif'),
+('Cat', 9, 'He''s trapped behind the screen! Buy now to save him!', 12.12, 'img/7.gif'),
 ('Cellphone', 9, 'Indestructible. Probably includes the Snake game.', 15.00, 'img/8.gif'),
 ('Clock', 9, 'Is the world ending yet? Check the time.', 4.99, 'img/9.gif'),
 ('Disk', 9, 'Meet your brand new image!', 53.42, 'img/10.gif'),
