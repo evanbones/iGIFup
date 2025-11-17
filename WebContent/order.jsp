@@ -4,59 +4,170 @@
 <html>
 <head>
 <title>iGifUp Order Processing</title>
+<link rel="stylesheet" href="css/listprod.css">
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
+    .order-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 30px;
+        background: linear-gradient(135deg, #330066, #5800cc 40%, #9900ff 90%);
+        border: 8px double #ffcc00;
+        border-radius: 20px;
+        box-shadow: 0 0 30px #ff00ff, 0 0 40px cyan;
     }
-    h1 {
-        color: #333;
+    
+    .order-container h1 {
+        color: #ffff33;
+        text-align: center;
+        text-shadow: 2px 2px 5px #ff00ff;
+        margin-bottom: 20px;
+        font-size: 36px;
     }
-    table {
-        border-collapse: collapse;
+    
+    .success-box {
+        background: rgba(0, 255, 0, 0.2);
+        border: 3px solid #00ff00;
+        padding: 20px;
+        border-radius: 15px;
         margin: 20px 0;
-        width: 100%;
-        max-width: 800px;
+        text-align: center;
     }
-    th, td {
-        border: 1px solid #ddd;
-        padding: 10px;
-        text-align: left;
+    
+    .success-box h2 {
+        color: #00ff00;
+        text-shadow: 0 0 10px #00ff00;
+        margin: 0 0 10px 0;
     }
-    th {
-        background-color: #4CAF50;
-        color: white;
+    
+    .success-box p {
+        color: #ccffcc;
+        font-size: 18px;
+        margin: 5px 0;
     }
-    tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-    .error {
-        color: #f44336;
-        font-weight: bold;
-        padding: 15px;
-        background-color: #ffebee;
-        border-left: 4px solid #f44336;
+    
+    .error-box {
+        background: rgba(255, 0, 0, 0.2);
+        border: 3px solid #ff0000;
+        padding: 20px;
+        border-radius: 15px;
         margin: 20px 0;
+        text-align: center;
     }
-    .success {
-        color: #4CAF50;
-        font-weight: bold;
-        padding: 15px;
-        background-color: #e8f5e9;
-        border-left: 4px solid #4CAF50;
-        margin: 20px 0;
+    
+    .error-box h2 {
+        color: #ff0000;
+        text-shadow: 0 0 10px #ff0000;
+        margin: 0 0 10px 0;
     }
+    
+    .error-box p {
+        color: #ffcccc;
+        font-size: 16px;
+    }
+    
     .order-summary {
-        background-color: #e7f3e7;
-        padding: 15px;
-        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 20px;
+        border-radius: 15px;
+        border: 3px inset yellow;
+        box-shadow: inset 0 0 15px magenta;
         margin: 20px 0;
+    }
+    
+    .order-summary h3 {
+        color: #00ffcc;
+        text-shadow: 0 0 5px #ff00ff;
+        margin-bottom: 15px;
+    }
+    
+    .summary-info {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .summary-info strong {
+        color: #00ffcc;
+        text-shadow: 0 0 3px #ff00ff;
+    }
+    
+    .summary-info span {
+        color: #ffff99;
+    }
+    
+    .order-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: rgba(0, 0, 40, 0.8);
+        border: 5px ridge #00ffff;
+        box-shadow: 0 0 20px cyan;
+    }
+    
+    .order-table th {
+        background: linear-gradient(90deg, #ff00ff, #9900ff);
+        border-bottom: 4px solid cyan;
+        color: yellow;
+        font-weight: bold;
+        padding: 14px;
+        text-shadow: 0 0 4px black;
+    }
+    
+    .order-table td {
+        padding: 12px;
+        border-bottom: 1px dashed #66ffff;
+        color: #c3f9ff;
+    }
+    
+    .order-table tr:nth-child(even) {
+        background: rgba(0, 0, 60, 0.5);
+    }
+    
+    .order-table tr:hover {
+        background: rgba(0, 255, 255, 0.2);
+    }
+    
+    .order-table .total-row {
+        font-weight: bold;
+        background: linear-gradient(90deg, #00cc00, #009900) !important;
+        color: #ffff00;
+        font-size: 18px;
+    }
+    
+    .action-links {
+        text-align: center;
+        margin-top: 30px;
+    }
+    
+    .action-links a {
+        display: inline-block;
+        padding: 14px 30px;
+        margin: 0 10px;
+        background: linear-gradient(#ff00ff, #8200ff);
+        border: 3px outset white;
+        color: yellow;
+        text-decoration: none;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px black;
+    }
+    
+    .action-links a:hover {
+        background: linear-gradient(#00ffff, #0066aa);
+        color: black;
+        border: 3px inset white;
+        transform: scale(1.05);
     }
 </style>
 </head>
 <body>
+<div class="page-container">
 
 <%@ include file="header.jsp" %>
+
+<div class="order-container">
 
 <% 
 String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
@@ -77,39 +188,47 @@ try {
 
     // Check if shopping cart is empty
     if (productList == null || productList.isEmpty()) {
-        out.println("<div class='error'>");
-        out.println("<h2>Error: Empty Shopping Cart</h2>");
-        out.println("<p>Your shopping cart is empty. Please <a href='listprod.jsp'>continue shopping</a>.</p>");
+        out.println("<div class='error-box'>");
+        out.println("<h2>Empty Shopping Cart</h2>");
+        out.println("<p>Your shopping cart is empty. Please add some items first!</p>");
         out.println("</div>");
+        out.println("<div class='action-links'><a href='listprod.jsp'>Start Shopping</a></div>");
+        out.println("</div></div></body></html>");
         return;
     }
     
     // Validate customer ID
     int numericCustId = 0;
     if (custId == null || custId.trim().isEmpty()) {
-        out.println("<div class='error'>");
-        out.println("<h2>Error: Missing Customer ID</h2>");
-        out.println("<p>You must enter a customer ID. <a href='checkout.jsp'>Go back</a></p>");
+        out.println("<div class='error-box'>");
+        out.println("<h2>Missing Customer ID</h2>");
+        out.println("<p>You must enter a customer ID.</p>");
         out.println("</div>");
+        out.println("<div class='action-links'><a href='checkout.jsp'>Go Back</a></div>");
+        out.println("</div></div></body></html>");
         return;
     }
     
     try {
         numericCustId = Integer.parseInt(custId);
     } catch (NumberFormatException e) {
-        out.println("<div class='error'>");
-        out.println("<h2>Error: Invalid Customer ID</h2>");
-        out.println("<p>Customer ID must be a valid number. <a href='checkout.jsp'>Go back</a></p>");
+        out.println("<div class='error-box'>");
+        out.println("<h2>Invalid Customer ID</h2>");
+        out.println("<p>Customer ID must be a valid number.</p>");
         out.println("</div>");
+        out.println("<div class='action-links'><a href='checkout.jsp'>Go Back</a></div>");
+        out.println("</div></div></body></html>");
         return;
     }
 
     // Validate password
     if (password == null || password.trim().isEmpty()) {
-        out.println("<div class='error'>");
-        out.println("<h2>Error: Missing Password</h2>");
-        out.println("<p>You must enter a password. <a href='checkout.jsp'>Go back</a></p>");
+        out.println("<div class='error-box'>");
+        out.println("<h2>Missing Password</h2>");
+        out.println("<p>You must enter a password.</p>");
         out.println("</div>");
+        out.println("<div class='action-links'><a href='checkout.jsp'>Go Back</a></div>");
+        out.println("</div></div></body></html>");
         return;
     }
 
@@ -117,8 +236,8 @@ try {
     Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
     con = DriverManager.getConnection(url, uid, pw);
 
-    // customer id exists in the database.
-    String sqlValidateCust = "SELECT customerId, firstName, lastName FROM customer WHERE customerId = ? AND password = ?";
+    // Verify customer credentials with case-sensitive password
+    String sqlValidateCust = "SELECT customerId, firstName, lastName FROM customer WHERE customerId = ? AND password COLLATE Latin1_General_CS_AS = ?";
     boolean customerExists = false;
     String customerName = "";
     
@@ -134,24 +253,24 @@ try {
     }
 
     if (!customerExists) {
-        out.println("<div class='error'>");
-        out.println("<h2>Error: Invalid Credentials</h2>");
-        out.println("<p>Customer ID " + numericCustId + " does not exist or password is incorrect. <a href='checkout.jsp'>Go back</a></p>");
+        out.println("<div class='error-box'>");
+        out.println("<h2>Invalid Credentials</h2>");
+        out.println("<p>Customer ID or password is incorrect.</p>");
         out.println("</div>");
+        out.println("<div class='action-links'><a href='checkout.jsp'>Go Back</a></div>");
+        out.println("</div></div></body></html>");
         return;
     }
     
-    // if we get here, the customer ID is valid and the cart is not empty
-
-    // start a transaction - all operations must work or none are executed
+    // Start transaction
     con.setAutoCommit(false);
     
-    // insert into ordersummary table and retrieve auto-generated id
+    // Insert into ordersummary table
     String sqlInsertOrder = "INSERT INTO orderSummary (customerId, orderDate, totalAmount) VALUES (?, GETDATE(), ?)";
     
     try (PreparedStatement pstmt = con.prepareStatement(sqlInsertOrder, Statement.RETURN_GENERATED_KEYS)) {
         pstmt.setInt(1, numericCustId);
-        pstmt.setDouble(2, 0.0); // Placeholder total
+        pstmt.setDouble(2, 0.0);
         pstmt.executeUpdate();
         
         ResultSet keys = pstmt.getGeneratedKeys();
@@ -162,7 +281,7 @@ try {
         }
     }
 
-    // Traverse list of products and store each in orderproduct table
+    // Insert order products
     String sqlInsertProduct = "INSERT INTO orderProduct (orderId, productId, quantity, price) VALUES (?, ?, ?, ?)";
     
     try (PreparedStatement pstmtProd = con.prepareStatement(sqlInsertProduct)) {
@@ -181,11 +300,11 @@ try {
             pstmtProd.setInt(3, qty);
             pstmtProd.setDouble(4, price);
             
-            pstmtProd.executeUpdate(); // Insert this product
+            pstmtProd.executeUpdate();
         }
     } 
 
-    // update total amount for the order in OrderSummary table
+    // Update total amount
     String sqlUpdateTotal = "UPDATE orderSummary SET totalAmount = ? WHERE orderId = ?";
     try (PreparedStatement pstmtUpdate = con.prepareStatement(sqlUpdateTotal)) {
         pstmtUpdate.setDouble(1, totalOrderAmount);
@@ -193,29 +312,29 @@ try {
         pstmtUpdate.executeUpdate();
     }
     
-    // if all database operations were successful, commit the transaction
+    // Commit transaction
     con.commit();
     
-    // display the order information
-    out.println("<div class='success'>");
-    out.println("<h1>Order Complete</h1>");
-    out.println("<p>Thank you for your order, " + customerName + "!</p>");
+    // Display success message
+    out.println("<div class='success-box'>");
+    out.println("<h2>Order Complete!</h2>");
+    out.println("<p>Thank you for your order, <strong>" + customerName + "</strong>!</p>");
     out.println("</div>");
     
     out.println("<div class='order-summary'>");
-    out.println("<p><b>Order ID:</b> " + orderId + "</p>");
-    out.println("<p><b>Customer ID:</b> " + numericCustId + "</p>");
-    out.println("<p><b>Customer Name:</b> " + customerName + "</p>");
+    out.println("<h3>Order Summary</h3>");
+    out.println("<div class='summary-info'>");
+    out.println("<strong>Order ID:</strong> <span>#" + orderId + "</span>");
+    out.println("<strong>Customer:</strong> <span>" + customerName + "</span>");
+    out.println("<strong>Customer ID:</strong> <span>" + numericCustId + "</span>");
     out.println("</div>");
     
-    out.println("<h3>Order Details:</h3>");
-    
-    out.println("<table>");
+    out.println("<h3>Order Details</h3>");
+    out.println("<table class='order-table'>");
     out.println("<tr><th>Product Name</th><th>Quantity</th><th>Price</th><th>Subtotal</th></tr>");
     
     NumberFormat currFormat = NumberFormat.getCurrencyInstance();
     
-    // iterate again to print the summary
     Iterator<Map.Entry<String, ArrayList<Object>>> displayIterator = productList.entrySet().iterator();
     while (displayIterator.hasNext()) {
         Map.Entry<String, ArrayList<Object>> entry = displayIterator.next();
@@ -234,45 +353,40 @@ try {
         out.println("</tr>");
     }
     
-    out.println("<tr style='font-weight: bold; background-color: #4CAF50; color: white;'>");
-    out.println("<td colspan='3' align='right'>Order Total:</td>");
+    out.println("<tr class='total-row'>");
+    out.println("<td colspan='3' align='right'><strong>Order Total:</strong></td>");
     out.println("<td align='right'>" + currFormat.format(totalOrderAmount) + "</td>");
     out.println("</tr>");
     out.println("</table>");
+    out.println("</div>");
 
-    out.println("<p><a href='listprod.jsp'>Continue Shopping</a></p>");
+    out.println("<div class='action-links'>");
+    out.println("<a href='listprod.jsp'>Continue Shopping</a>");
+    out.println("<a href='listorder.jsp'>View All Orders</a>");
+    out.println("</div>");
 
-    // clear the shopping cart
+    // Clear shopping cart
     session.removeAttribute("productList");
 
 } catch (SQLException e) {
-        // if anything went wrong, roll back the transaction
     if (con != null) {
         try {
             con.rollback();
         } catch (SQLException ex) {
-            out.println("<p>Error during transaction rollback: " + ex.getMessage() + "</p>");
+            out.println("<p>Error during rollback: " + ex.getMessage() + "</p>");
         }
     }
-    out.println("<div class='error'>");
+    out.println("<div class='error-box'>");
     out.println("<h2>Database Error</h2>");
     out.println("<p>Your order could not be placed due to a database error.</p>");
     out.println("<pre>" + e.toString() + "</pre>");
     out.println("</div>");
-    e.printStackTrace(new java.io.PrintWriter(out));
-    
-} catch (Exception e) {
-    out.println("<div class='error'>");
-    out.println("<h2>Application Error</h2>");
-    out.println("<p>Your order could not be placed due to an application error.</p>");
-    out.println("<pre>" + e.toString() + "</pre>");
-    out.println("</div>");
-    e.printStackTrace(new java.io.PrintWriter(out));
+    out.println("<div class='action-links'><a href='checkout.jsp'>Try Again</a></div>");
     
 } finally {
     if (con != null) {
         try {
-            con.setAutoCommit(true); // Reset to default
+            con.setAutoCommit(true);
             con.close();
         } catch (SQLException e) {
             out.println(e);
@@ -280,5 +394,8 @@ try {
     }
 }
 %>
+
+</div>
+</div>
 </body>
 </html>
