@@ -142,3 +142,47 @@ tr:hover {
     font-size: 18px;
     width: 70%;
 }
+
+.gradient-container {
+    margin: 40px auto;
+    padding: 40px;
+    width: 70%;
+    background: linear-gradient(135deg, #150050, #3e0099 60%, #8200ff);
+    border: 6px groove #00ffff;
+    border-radius: 20px;
+    box-shadow: 0 0 30px cyan, inset 0 0 20px #ff00ff;
+    text-align: center;
+}
+
+.empty-state h1 {
+    color: #ffea00;
+    text-shadow: 0 0 10px #ff00ff, 0 0 10px cyan;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #c3f9ff;
+    font-size: 18px;
+    margin-bottom: 25px;
+}
+
+.action-links {
+    margin-top: 20px;
+}
+
+.action-links .btn {
+    padding: 12px 20px;
+    border-radius: 10px;
+    background: linear-gradient(#ff00ff, #9900cc);
+    border: 3px outset white;
+    color: yellow;
+    text-decoration: none;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+}
+
+.action-links .btn:hover {
+    background: linear-gradient(#00ffee, #0088aa);
+    color: black;
+    border: 3px inset white;
+}

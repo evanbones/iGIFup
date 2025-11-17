@@ -8,7 +8,7 @@
 <html>
 <head>
 <title>Your Shopping Cart</title>
-<link rel="stylesheet" href="css/listprod.css"
+<link rel="stylesheet" href="css/listprod.css">
 </head>
 <body>
 <div class="page-container">
@@ -21,9 +21,14 @@ HashMap<String, ArrayList<Object>> productList = (HashMap<String, ArrayList<Obje
 
 if (productList == null || productList.isEmpty())
 {	
-    out.println("<div class='empty-cart'>");
+    out.println("<div class='gradient-container'>");
+    out.println("<div class='empty-state'>");
     out.println("<h1>Your Shopping Cart is Empty!</h1>");
     out.println("<p>Start shopping to add items to your cart.</p>");
+    out.println("</div>");
+    out.println("<div class='action-links'>");
+    out.println("<a href='listprod.jsp' class='btn'>Start Shopping</a>");
+    out.println("</div>");
     out.println("</div>");
 }
 else
@@ -85,12 +90,6 @@ else
 	out.println("<a href=\"checkout.jsp\" class='add-cart-link'>Proceed to Checkout</a>"); // change classes later 
 	out.println("<a href=\"listprod.jsp\" class='add-cart-link'>Continue Shopping</a>");
 	out.println("</div>");
-}
-
-if (productList == null || productList.isEmpty()) {
-    out.println("<div class='action-links'>");
-    out.println("<a href=\"listprod.jsp\" class='continue-btn'>Start Shopping</a>");
-    out.println("</div>");
 }
 %>
 </div>

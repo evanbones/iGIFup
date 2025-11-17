@@ -33,9 +33,19 @@
 		try 
 		{
 			getConnection();
-			
-			// TODO: Check if userId and password match some customer account. If so, set retStr to be the username.
-			retStr = "";			
+			// Check if userId and password match some customer account
+			String query = "SELECT userid FROM customer WHERE userid = ? AND password COLLATE Latin1_General_CS_AS = ?"; // Case-sensitive password check
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setString(1, username);
+			pstmt.setString(2, password);
+			ResultSet rs = pstmt.executeQuery();
+
+			if(rs.next())
+			{
+				retStr = rs.getString("userId");
+			}
+			rs.close();
+			pstmt.close();	
 		} 
 		catch (SQLException ex) {
 			out.println(ex);
