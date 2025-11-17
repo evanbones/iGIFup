@@ -17,7 +17,7 @@
         padding: 20px;
 
         background: linear-gradient(135deg, #330066, #5800cc 40%, #9900ff 90%);
-        border: 8px double #ffcc00;
+        border: 8px double #ffcc00; 
         box-shadow: 0 0 25px #ff00ff, 0 0 40px cyan;
         border-radius: 20px;
         color: yellow;
@@ -59,6 +59,7 @@
 
     .product-images img {
         scale: 1.3;
+        margin-top: 20px;
         max-width: 100px;
         border: 5px groove #00ffff;
         image-rendering: pixelated;
