@@ -161,7 +161,7 @@ INSERT INTO product (productName, categoryId, productDesc, productPrice, product
 ('Book', 9, 'Train your brain! Get off the Internet!', 8.88, 'img/5.gif'),
 ('Cactus', 9, 'Youch, it''s sharp! A desert vibe for your homepage.', 6.66, 'img/6.gif'),
 ('Cat', 9, 'He''s trapped behind the screen! Buy now to save him!', 12.12, 'img/7.gif'),
-('Cellphone', 9, 'Indestructible. Probably includes the Snake game.', 15.00, 'img/8.gif'),
+('Cellphone', 9, 'Indestructible. Probably includes Snake.', 15.00, 'img/8.gif'),
 ('Clock', 9, 'Is the world ending yet? Check the time.', 4.99, 'img/9.gif'),
 ('Disk', 9, 'Meet your brand new image!', 53.42, 'img/10.gif'),
 ('Duck', 9, 'It''s duck season!', 5.55, 'img/11.gif'),
@@ -172,20 +172,20 @@ INSERT INTO product (productName, categoryId, productDesc, productPrice, product
 ('Floppy Disk', 9, 'Holds a massive 1.44MB of data.', 6.00, 'img/16.gif'),
 ('Flower', 9, 'Stop and smell the pixels.', 8.16, 'img/17.gif'),
 ('Gears', 9, 'Please excuse the dust, we are working on it.', 2.02, 'img/18.gif'),
-('Gecko', 9, 'He comes and goes... mostly goes.', 7.77, 'img/19.gif'),
+('Gecko', 9, 'Enter the Gecko!', 7.77, 'img/19.gif'),
 ('Lava Lamp', 9, 'Groovy, baby!', 11.11, 'img/20.gif'),
 ('Lemon', 9, 'When life gives you lemons, buy this gif.', 4.44, 'img/21.gif'),
 ('Mailbox', 9, 'For sending physical mail. Not sure why you''d do that though.', 5.01, 'img/22.gif'),
 ('Milk', 9, 'For the strongest bones. Calcium included.', 9.99, 'img/23.gif'),
-('Paddle', 9, 'Modelled after the first video game.', 8.88, 'img/24.gif'),
+('Paddle', 9, 'Modelled after Pong.', 8.88, 'img/24.gif'),
 ('Palette', 9, 'Graphic design is my passion.', 6.66, 'img/25.gif'),
 ('Porthole', 9, 'Surfing the web in style.', 12.34, 'img/26.gif'),
 ('Robot', 9, 'Mr. Roboto. Only speaks binary.', 13.13, 'img/27.gif'),
 ('Scissors', 9, 'Running with these is not recommended.', 7.89, 'img/28.gif'),
 ('Seal', 9, 'This gets my seal of approval.', 5.55, 'img/29.gif'),
 ('Shark', 9, 'We''re gonna need a bigger boat.', 18.00, 'img/30.gif'),
-('Tree', 9, 'A natural touch for your digital forest.', 9.21, 'img/31.gif'),
-('Dog', 9, 'He''s the top dog!', 2.17, 'img/32.gif');
+('Tree', 9, 'Literally a binary tree.', 9.21, 'img/31.gif'),
+('Dog', 9, 'He''s top dog!', 2.17, 'img/32.gif');
 
 
 INSERT INTO warehouse(warehouseName) VALUES ('Main warehouse');
