@@ -19,6 +19,7 @@
 <%
 if (session.getAttribute("loginMessage") != null)
     out.println("<p>"+session.getAttribute("loginMessage")+"</p>");
+    session.removeAttribute("loginMessage");
 %>
 
 <form name="MyForm" method="post" action="validateLogin.jsp">
