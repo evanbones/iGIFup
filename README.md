@@ -1,26 +1,20 @@
 # iGIFup.lol
 
-An early 2000s-style e-commerce site for buying and selling retro GIFs
+An early 2000s-style e-commerce site for buying and selling retro GIFs.
 
-Created by **Evan Bowness** and **Patrick Rinn**
-
----
+Created by **Evan Bowness** and **Patrick Rinn**.
 
 ## Mission Statement
 
 Our mission at iGIFup.lol is to preserve and celebrate early 2000s Internet culture by curating and selling authentic 2000s-2010s GIFs. We aim to combine the digital nostalgia of the early computing age with the horrendous price markups of the modern era.
 
----
-
 ## About
 
 iGIFup.lol is an online storefront dedicated to the revival of early 2000s Internet art through the sale of retro GIFs: from glittering "Under Construction" banners and flaming skulls to pixelated dancing babies. 
 
-In a grim modern era dominated by corporate ultraminimalist slop, iGIFup offers a refreshing return to the humanist, expressive joy of Web 1.0 aesthetics. Our carefully curated collections tap into nostalgia marketing and the resurgence of Y2K digital culture, targeting artists, designers, and brands seeking authentic retro visuals. 
+In a grim modern era dominated by corporate ultraminimalist slop, iGIFup offers a refreshing return to the expressive joy of Web 1.0 aesthetics. Our carefully curated collections tap into nostalgia marketing and the resurgence of Y2K culture, targeting artists, designers, and brands seeking authentic retro visuals. 
 
-Through simple, pain-free, and fast digital downloads, iGIFup bridges past and present: turning the forgotten relics of GeoCities into the collectible pop art of the future.
-
----
+Through excruciatingly slow digital downloads, iGIFup bridges past and present: turning the relics of GeoCities into the collectible pop art of the future.
 
 ## Tech Stack
 
@@ -29,8 +23,6 @@ Through simple, pain-free, and fast digital downloads, iGIFup bridges past and p
 - **Server**: Apache Tomcat 9
 - **Frontend**: HTML, CSS, JavaScript
 - **Containerization**: Docker
-
----
 
 ## Getting Started
 
@@ -58,8 +50,6 @@ docker-compose up -d
 
 On first run, visit `http://localhost/shop/loaddata.jsp` to initialize the database with sample products and customers.
 
----
-
 ## Features
 
 - **Product Search**: Search products by name
@@ -67,8 +57,6 @@ On first run, visit `http://localhost/shop/loaddata.jsp` to initialize the datab
 - **Shopping Cart**: Add products and manage quantities
 - **Secure Checkout**: Password-protected order placement
 - **Order Tracking**: View complete order history
-
----
 
 ## Test Credentials
 
@@ -79,8 +67,6 @@ Use these customer accounts to test the checkout process:
 | 1 | `304Arnold!` | Arnold Anderson |
 | 2 | `304Bobby!` | Bobby Brown |
 | 3 | `304Candace!` | Candace Cole |
-
----
 
 ## License
 
