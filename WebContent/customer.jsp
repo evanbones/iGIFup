@@ -1,114 +1,129 @@
+<%@ page import="java.sql.*, java.text.NumberFormat" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF8"%>
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Customer Page</title>
-	<link rel="stylesheet" href="css/listprod.css">
+<title>My Profile</title>
+<link rel="stylesheet" href="css/index.css">
+<style>
+    .profile-container { display: flex; gap: 20px; flex-wrap: wrap; text-align: left; }
+    .profile-box, .orders-box {
+        background: rgba(0,0,0,0.6); border: 3px outset #00FFFF; padding: 20px; border-radius: 10px;
+    }
+    .profile-box { flex: 1; min-width: 300px; }
+    .orders-box { flex: 2; min-width: 400px; }
+    
+    h3 { color: #FFFF00; border-bottom: 2px dashed #FF00FF; padding-bottom: 5px; }
+    input[type="text"], input[type="password"] {
+        width: 95%; background: #000; color: #FFF; border: 1px solid #00FF00; padding: 5px; margin-bottom: 8px;
+    }
+    table { width: 100%; border-collapse: collapse; color: #FFF; }
+    th { background: #330066; color: #00FF00; padding: 8px; }
+    td { border-bottom: 1px solid #555; padding: 8px; }
+</style>
 </head>
-
 <body>
-	<div class="page-container">
-		<%@ include file="auth.jsp" %>
-		<%@ page import="java.sql.*" %>
+<div class="page-container">
+<%@ include file="header.jsp" %>
+<div class="main-content">
 
-		<%@ include file="header.jsp" %>
+<%
+    String user = (String) session.getAttribute("authenticatedUser");
+    if (user == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+    
+    // Check for error/success messages from update page
+    String msg = request.getParameter("msg");
+    if (msg != null) out.println("<p style='background:red; color:white; padding:5px;'>" + msg + "</p>");
 
-		<%  
-		// ensure user is logged in 
-		String userName = (String) session.getAttribute("authenticatedUser");
-		String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
-		String uid = "sa";
-		String pw = "304#sa#pw";
+    String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+    String uid = "sa";
+    String pw = "304#sa#pw";
+    
+    try (Connection con = DriverManager.getConnection(url, uid, pw)) {
+        
+        String sqlCust = "SELECT * FROM customer WHERE userid = ?";
+        PreparedStatement pstmt = con.prepareStatement(sqlCust);
+        pstmt.setString(1, user);
+        ResultSet rsCust = pstmt.executeQuery();
+        
+        if (rsCust.next()) {
+            int custId = rsCust.getInt("customerId");
+%>
+    <div class="welcome-section">
+        <h2>My Account</h2>
+    </div>
 
-		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		} catch (ClassNotFoundException e) {
-			out.println("ClassNotFoundException: " + e.getMessage());
-		}
+    <div class="profile-container">
+        
+        <div class="profile-box">
+            <h3>Edit Profile</h3>
+            <form action="update_profile.jsp" method="post">
+                <input type="hidden" name="oldUserid" value="<%= rsCust.getString("userid") %>">
 
-		String sql = "SELECT customerId, firstName, lastName, email, phonenum, address, city, state, postalCode, country, userid " +
-					 "FROM customer WHERE userid = ?";
+                <label style="color:#FFFF00;">Username:</label>
+                <input type="text" name="userid" value="<%= rsCust.getString("userid") %>">
 
-		try (Connection con = DriverManager.getConnection(url, uid, pw);
-			 PreparedStatement pstmt = con.prepareStatement(sql)) {
+                <label>First Name:</label>
+                <input type="text" name="firstName" value="<%= rsCust.getString("firstName") %>">
+                
+                <label>Last Name:</label>
+                <input type="text" name="lastName" value="<%= rsCust.getString("lastName") %>">
+                
+                <label>Email:</label>
+                <input type="text" name="email" value="<%= rsCust.getString("email") %>">
+                
+                <label>Phone:</label>
+                <input type="text" name="phonenum" value="<%= rsCust.getString("phonenum") %>">
+                
+                <label>Address:</label>
+                <input type="text" name="address" value="<%= rsCust.getString("address") %>">
+                
+                <label>City:</label>
+                <input type="text" name="city" value="<%= rsCust.getString("city") %>">
+                
+                <label>Password:</label>
+                <input type="password" name="password" value="<%= rsCust.getString("password") %>">
+                
+                <input type="submit" value="Update Info" style="margin-top:10px; cursor:pointer;">
+            </form>
+        </div>
 
-			pstmt.setString(1, userName);
-
-			try (ResultSet rs = pstmt.executeQuery()) {
-
-				if (rs.next()) {
-
-					int customerId = rs.getInt("customerId");
-					String firstName = rs.getString("firstName");
-					String lastName = rs.getString("lastName");
-					String email = rs.getString("email");
-					String phone = rs.getString("phonenum");
-					String address = rs.getString("address");
-					String city = rs.getString("city");
-					String state = rs.getString("state");
-					String postal = rs.getString("postalCode");
-					String country = rs.getString("country");
-					String userid = rs.getString("userid");
-		%>
-
-		<h2>Customer Profile</h2>
-
-		<table border="1" cellpadding="8">
-			<tr>
-				<th>Id</th>
-				<td><%= customerId %></td>
-			</tr>
-			<tr>
-				<th>First Name</th>
-				<td><%= firstName %></td>
-			</tr>
-			<tr>
-				<th>Last Name</th>
-				<td><%= lastName %></td>
-			</tr>
-			<tr>
-				<th>Email</th>
-				<td><%= email %></td>
-			</tr>
-			<tr>
-				<th>Phone</th>
-				<td><%= phone %></td>
-			</tr>
-			<tr>
-				<th>Address</th>
-				<td><%= address %></td>
-			</tr>
-			<tr>
-				<th>City</th>
-				<td><%= city %></td>
-			</tr>
-			<tr>
-				<th>State</th>
-				<td><%= state %></td>
-			</tr>
-			<tr>
-				<th>Postal Code</th>
-				<td><%= postal %></td>
-			</tr>
-			<tr>
-				<th>Country</th>
-				<td><%= country %></td>
-			</tr>
-			<tr>
-				<th>User id</th>
-				<td><%= userid %></td>
-			</tr>
-		</table>
-
-		<% 
-				} else { 
-					out.println("<p>No customer record found.</p>");
-				}
-			}
-		} catch (SQLException e) {
-			out.println("<p>Error loading customer information: " + e.getMessage() + "</p>");
-		}
-		%>
-
+        <div class="orders-box">
+            <h3>My Order History</h3>
+            <table>
+                <tr><th>ID</th><th>Date</th><th>Amount</th><th>Ship To</th></tr>
+                <%
+                    NumberFormat curr = NumberFormat.getCurrencyInstance();
+                    String sqlOrders = "SELECT orderId, orderDate, totalAmount, shiptoCity FROM ordersummary WHERE customerId = ? ORDER BY orderDate DESC";
+                    PreparedStatement pstmtOrd = con.prepareStatement(sqlOrders);
+                    pstmtOrd.setInt(1, custId);
+                    ResultSet rsOrd = pstmtOrd.executeQuery();
+                    
+                    boolean hasOrders = false;
+                    while (rsOrd.next()) {
+                        hasOrders = true;
+                        out.println("<tr>");
+                        out.println("<td>#" + rsOrd.getInt("orderId") + "</td>");
+                        out.println("<td>" + rsOrd.getTimestamp("orderDate") + "</td>");
+                        out.println("<td>" + curr.format(rsOrd.getDouble("totalAmount")) + "</td>");
+                        out.println("<td>" + rsOrd.getString("shiptoCity") + "</td>");
+                        out.println("</tr>");
+                    }
+                    if (!hasOrders) out.println("<tr><td colspan='4'>No orders found.</td></tr>");
+                %>
+            </table>
+        </div>
+    </div>
+<%
+        }
+    } catch (Exception e) {
+        out.println("Error: " + e);
+    }
+%>
+</div>
 </div>
 </body>
 </html>

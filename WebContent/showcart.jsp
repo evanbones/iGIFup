@@ -9,87 +9,82 @@
 <head>
 <title>Your Shopping Cart</title>
 <link rel="stylesheet" href="css/listprod.css">
+<script>
+    function validateUpdate(form) {
+        var qty = form.newQty.value;
+        if (isNaN(qty) || qty < 0) {
+            alert("Please enter a valid quantity.");
+            return false;
+        }
+        return true;
+    }
+</script>
 </head>
 <body>
 <div class="page-container">
 <%@ include file="header.jsp" %>
 
 <%
-// Get the current list of products
 @SuppressWarnings({"unchecked"})
 HashMap<String, ArrayList<Object>> productList = (HashMap<String, ArrayList<Object>>) session.getAttribute("productList");
 
-if (productList == null || productList.isEmpty())
-{	
+if (productList == null || productList.isEmpty()) {    
     out.println("<div class='gradient-container'>");
-    out.println("<div class='empty-state'>");
     out.println("<h1>Your Shopping Cart is Empty!</h1>");
-    out.println("<p>Start shopping to add items to your cart.</p>");
+    out.println("<p><a href='listprod.jsp' class='btn'>Start Shopping</a></p>");
     out.println("</div>");
-    out.println("<div class='action-links'>");
-    out.println("<a href='listprod.jsp' class='btn'>Start Shopping</a>");
-    out.println("</div>");
-    out.println("</div>");
-}
-else
-{
-	NumberFormat currFormat = NumberFormat.getCurrencyInstance();
+} else {
+    NumberFormat currFormat = NumberFormat.getCurrencyInstance();
 
-	out.println("<h1>Your Shopping Cart</h1>");
-	out.print("<table><tr><th>Product ID</th><th>Product Name</th><th>Quantity</th>");
-	out.println("<th>Price</th><th>Subtotal</th></tr>");
+    out.println("<h1>Your Shopping Cart</h1>");
+    out.println("<table>");
+    out.println("<tr><th>Product ID</th><th>Product Name</th><th>Quantity</th><th>Price</th><th>Subtotal</th><th>Remove</th></tr>");
 
-	double total = 0;
-	Iterator<Map.Entry<String, ArrayList<Object>>> iterator = productList.entrySet().iterator();
-	while (iterator.hasNext()) 
-	{	
+    double total = 0;
+    Iterator<Map.Entry<String, ArrayList<Object>>> iterator = productList.entrySet().iterator();
+    
+    while (iterator.hasNext()) {    
         Map.Entry<String, ArrayList<Object>> entry = iterator.next();
-		ArrayList<Object> product = (ArrayList<Object>) entry.getValue();
-		if (product.size() < 4)
-		{
-			out.println("Expected product with four entries. Got: "+product);
-			continue;
-		}
-		
-		out.print("<tr><td>"+product.get(0)+"</td>");
-		out.print("<td>"+product.get(1)+"</td>");
+        ArrayList<Object> product = (ArrayList<Object>) entry.getValue();
+        
+        String productId = (String) product.get(0);
+        String productName = (String) product.get(1);
+        double price = Double.parseDouble(product.get(2).toString());
+        int qty = Integer.parseInt(product.get(3).toString());
 
-		out.print("<td align=\"center\">"+product.get(3)+"</td>");
-		Object price = product.get(2);
-		Object itemqty = product.get(3);
-		double pr = 0;
-		int qty = 0;
-		
-		try
-		{
-			pr = Double.parseDouble(price.toString());
-		}
-		catch (Exception e)
-		{
-			out.println("Invalid price for product: "+product.get(0)+" price: "+price);
-		}
-		try
-		{
-			qty = Integer.parseInt(itemqty.toString());
-		}
-		catch (Exception e)
-		{
-			out.println("Invalid quantity for product: "+product.get(0)+" quantity: "+qty);
-		}		
+        out.print("<tr>");
+        out.print("<td>" + productId + "</td>");
+        out.print("<td>" + productName + "</td>");
 
-		out.print("<td align=\"right\">"+currFormat.format(pr)+"</td>");
-		out.print("<td align=\"right\">"+currFormat.format(pr*qty)+"</td></tr>");
-		out.println("</tr>");
-		total = total +pr*qty;
-	}
-	out.println("<tr class='total-row'><td colspan=\"4\" align=\"right\">Order Total</td>"
-			+"<td align=\"right\">"+currFormat.format(total)+"</td></tr>");
-	out.println("</table>");
+        // --- NEW: Quantity Update Form ---
+        out.print("<td align='center'>");
+        out.print("<form method='get' action='addcart.jsp' onsubmit='return validateUpdate(this);' style='margin:0;'>");
+        out.print("<input type='hidden' name='id' value='" + productId + "'>");
+        out.print("<input type='hidden' name='name' value='" + productName + "'>");
+        out.print("<input type='hidden' name='price' value='" + price + "'>");
+        // 'update' param tells addcart.jsp to replace quantity, not add to it
+        out.print("<input type='hidden' name='action' value='update'>"); 
+        out.print("<input type='text' name='quantity' value='" + qty + "' size='3' style='text-align:center;'> ");
+        out.print("<input type='submit' value='Update' class='btn-small'>");
+        out.print("</form>");
+        out.print("</td>");
+        // ---------------------------------
 
-	out.println("<div class='action-links'>");
-	out.println("<a href=\"checkout.jsp\" class='add-cart-link'>Proceed to Checkout</a>"); // change classes later 
-	out.println("<a href=\"listprod.jsp\" class='add-cart-link'>Continue Shopping</a>");
-	out.println("</div>");
+        out.print("<td align='right'>" + currFormat.format(price) + "</td>");
+        out.print("<td align='right'>" + currFormat.format(price * qty) + "</td>");
+        out.print("<td align='center'><a href='addcart.jsp?id=" + productId + "&action=delete' style='color:red;'>Remove</a></td>");
+        
+        out.println("</tr>");
+        total = total + (price * qty);
+    }
+    
+    out.println("<tr class='total-row'><td colspan='6' align='right'><b>Order Total: " + currFormat.format(total) + "</b></td></tr>");
+    out.println("</table>");
+
+    out.println("<div class='action-links'>");
+    out.println("<a href='checkout.jsp' class='add-cart-link'>Proceed to Checkout</a>");
+    out.println("<a href='listprod.jsp' class='add-cart-link'>Continue Shopping</a>");
+    out.println("</div>");
 }
 %>
 </div>
