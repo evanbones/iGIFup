@@ -19,7 +19,7 @@
                 <a href="listprod.jsp">Begin Shopping</a>
                 <a href="loaddata.jsp">Load Data</a>
                 <a href="customer.jsp">Profile</a>
-                <a href="admin.jsp">Administrators</a>
+                <a href="admin.jsp">Administrator</a>
             </div>
 
             <%-- Trending Section --%>

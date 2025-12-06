@@ -37,7 +37,7 @@
         padding: 4px;
         border-bottom: 1px solid #333;
     }
-    /* New styles for the Add to Cart form */
+    /* Add to Cart form styles */
     .add-cart-form {
         margin-top: 20px;
         background: rgba(255, 255, 255, 0.1);
@@ -100,6 +100,11 @@ if (productId == null || productId.isEmpty()) {
             if (imageURL != null && !imageURL.trim().isEmpty()) {
                 out.println("<div><img src='" + request.getContextPath() + "/" + imageURL + "' alt='" + productName + "'></div>");
             }
+            // Check for binary image too
+            byte[] binaryImage = rs.getBytes("productImage");
+            if (binaryImage != null && binaryImage.length > 0) {
+                 out.println("<div><img src='displayImage.jsp?id=" + pid + "' alt='Binary Image'></div>");
+            }
             out.println("</div>");
             
             // Info Section
@@ -107,12 +112,10 @@ if (productId == null || productId.isEmpty()) {
             out.println("<p><strong>Category:</strong> " + categoryName + "</p>");
             out.println("<p class='price'>" + formattedPrice + "</p>");
             
-            // --- INVENTORY DISPLAY ---
+            // --- INVENTORY DISPLAY & DROPDOWN BUILDER ---
             out.println("<div class='inventory-section'>");
             out.println("<h4>Current Stock Status</h4>");
             
-            // We'll store the results to populate the dropdown later without re-querying
-            // Using a simple HTML string builder approach for the dropdown options
             StringBuilder dropdownOptions = new StringBuilder();
             boolean productAvailable = false;
 
@@ -140,7 +143,6 @@ if (productId == null || productId.isEmpty()) {
                 out.println("<td style='" + qtyStyle + "'>" + qty + "</td>");
                 out.println("</tr>");
 
-                // Build dropdown options for warehouses that have stock
                 if (qty > 0) {
                     productAvailable = true;
                     dropdownOptions.append("<option value='" + wId + "'>" + wName + " (" + qty + " available)</option>");
@@ -156,7 +158,7 @@ if (productId == null || productId.isEmpty()) {
                 out.println("<div class='description'><h3>Description</h3><p>" + description + "</p></div>");
             }
             
-            // --- ADD TO CART FORM (Replaces the old Link) ---
+            // --- ADD TO CART FORM ---
             if (productAvailable) {
                 out.println("<form action='addcart.jsp' method='get' class='add-cart-form'>");
                 out.println("<input type='hidden' name='id' value='" + pid + "'>");
@@ -179,7 +181,101 @@ if (productId == null || productId.isEmpty()) {
             out.println("</div>");
             
             out.println("</div></div></div>"); // Close info, content, detail
+
+            // =========================================================================
+            // REVIEWS SECTION
+            // =========================================================================
+            out.println("<div class='reviews-section'>");
+            out.println("<h2>Customer Reviews</h2>");
+            
+            String reviewSuccess = request.getParameter("reviewSuccess");
+            String deleteSuccess = request.getParameter("deleteSuccess");
+            String error = request.getParameter("error");
+            
+            if ("true".equals(reviewSuccess)) out.println("<div class='success-message'>Thank you! Your review has been submitted successfully!</div>");
+            if ("true".equals(deleteSuccess)) out.println("<div class='success-message'>Review deleted successfully!</div>");
+            
+            String displayStyle = (error != null) ? "block" : "none";
+            out.println("<div id='globalErrorContainer' class='error-message-review' style='display: " + displayStyle + ";'>");
+            if (error != null) out.println("Error: " + error);
+            out.println("</div>");
+            
+            String reviewSql = "SELECT r.reviewId, r.reviewRating, r.reviewDate, r.reviewComment, r.customerId, c.firstName, c.lastName " +
+                              "FROM review r JOIN customer c ON r.customerId = c.customerId " +
+                              "WHERE r.productId = ? ORDER BY r.reviewDate DESC";
+            
+            PreparedStatement reviewStmt = con.prepareStatement(reviewSql);
+            reviewStmt.setInt(1, pid);
+            ResultSet reviewRs = reviewStmt.executeQuery();
+            
+            // Check current user for delete permissions
+            Integer currentCustomerId = null;
+            boolean isAdmin = false;
+            String userName = (String) session.getAttribute("authenticatedUser");
+            
+            if (userName != null) {
+                String getCurrentCustomerSql = "SELECT customerId FROM customer WHERE userid = ?";
+                PreparedStatement currentCustStmt = con.prepareStatement(getCurrentCustomerSql);
+                currentCustStmt.setString(1, userName);
+                ResultSet currentCustRs = currentCustStmt.executeQuery();
+                if (currentCustRs.next()) currentCustomerId = currentCustRs.getInt("customerId");
+                currentCustRs.close();
+                currentCustStmt.close();
+                isAdmin = "admin".equals(userName);
+            }
+            
+            boolean hasReviews = false;
+            while (reviewRs.next()) {
+                hasReviews = true;
+                int reviewId = reviewRs.getInt("reviewId");
+                double rating = reviewRs.getDouble("reviewRating");
+                Timestamp reviewDate = reviewRs.getTimestamp("reviewDate");
+                String comment = reviewRs.getString("reviewComment");
+                String firstName = reviewRs.getString("firstName");
+                String lastName = reviewRs.getString("lastName");
+                int reviewCustomerId = reviewRs.getInt("customerId");
+                
+                boolean canDelete = isAdmin || (currentCustomerId != null && currentCustomerId == reviewCustomerId);
+                
+                out.println("<div class='review-item'>");
+                out.println("<div class='review-header'><span class='review-author'>" + firstName + " " + lastName + "</span>");
+                out.println("<div class='review-header-right'><span class='review-date'>" + reviewDate + "</span>");
+                if (canDelete) {
+                    out.println("<a href='deleteReview.jsp?reviewId=" + reviewId + "&productId=" + pid + "' class='delete-review-btn' onclick='return confirm(\"Delete review?\");'>Delete</a>");
+                }
+                out.println("</div></div>");
+                out.println("<div class='review-rating'><span class='stars-display' data-rating='" + rating + "'></span></div>");
+                out.println("<div class='review-comment'>" + comment + "</div>");
+                out.println("</div>");
+            }
+            
+            if (!hasReviews) out.println("<div class='no-reviews'>No reviews yet. Be the first!</div>");
+            reviewRs.close();
+            reviewStmt.close();
+     
+            if (userName != null) {
+                out.println("<div class='review-form'><h3>Write a Review</h3>");
+                out.println("<form id='reviewForm' method='post' action='submitReview.jsp' onsubmit='return validateReview()'>");
+                out.println("<input type='hidden' name='productId' value='" + pid + "'>");
+                out.println("<input type='hidden' id='ratingValue' name='rating' value='0'>");
+                
+                out.println("<div class='form-group'><label>Rating: <span id='ratingText'>0</span> / 5</label>");
+                out.println("<div class='rating-interactive-container'><div class='stars-input-wrapper' id='starsInteractive'></div></div></div>");
+                
+                out.println("<div class='form-group'><label for='comment'>Your Review:</label>");
+                out.println("<textarea id='comment' name='comment' placeholder='Share your thoughts...' required></textarea></div>");
+                out.println("<button type='submit' class='submit-review-btn'>Submit Review</button>");
+                out.println("</form></div>");
+            } else {
+                out.println("<div class='login-prompt'><p>Please <a href='login.jsp'>log in</a> to write a review.</p></div>");
+            }
+            
+            out.println("</div>"); // End Reviews Section
+
+        } else {
+            out.println("<h3>Product Not Found</h3>");
         }
+        
         rs.close();
         pstmt.close();
     } catch (Exception ex) {
@@ -188,5 +284,72 @@ if (productId == null || productId.isEmpty()) {
 }
 %>
 </div>
+
+<!-- SCRIPTS FOR STAR RATING -->
+<script>
+function createStarSVG(size, isFull) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', size);
+  svg.setAttribute('height', size);
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.style.display = 'inline-block';
+  svg.style.marginRight = '2px';
+  if(size > 30) svg.style.pointerEvents = 'none'; 
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z');
+  
+  if (isFull) { path.setAttribute('fill', '#FFD700'); path.setAttribute('stroke', '#FFA500'); } 
+  else { path.setAttribute('fill', '#666666'); path.setAttribute('stroke', '#444444'); }
+  
+  path.setAttribute('stroke-width', '1');
+  svg.appendChild(path);
+  return svg;
+}
+
+document.querySelectorAll('.stars-display').forEach(function(el) {
+  const rating = Math.round(parseFloat(el.getAttribute('data-rating'))); 
+  for(let i=1; i<=5; i++) el.appendChild(createStarSVG(24, i <= rating));
+});
+
+const starsInteractive = document.getElementById('starsInteractive');
+if (starsInteractive) {
+    const ratingText = document.getElementById('ratingText');
+    const ratingInput = document.getElementById('ratingValue');
+    let savedRating = 0; 
+
+    function renderInteractiveStars(rating) {
+        starsInteractive.innerHTML = '';
+        const count = Math.round(rating);
+        for(let i=1; i<=5; i++) starsInteractive.appendChild(createStarSVG(45, i <= count));
+        if(ratingText) ratingText.innerText = count;
+    }
+
+    function calculateRating(e) {
+        const rect = starsInteractive.getBoundingClientRect();
+        const percent = (e.clientX - rect.left) / rect.width;
+        let starCount = Math.ceil(percent * 5);
+        if(starCount < 1) starCount = 1; if(starCount > 5) starCount = 5;
+        return starCount;
+    }
+
+    starsInteractive.addEventListener('mousemove', function(e) { renderInteractiveStars(calculateRating(e)); });
+    starsInteractive.addEventListener('mouseleave', function(e) { renderInteractiveStars(savedRating); });
+    starsInteractive.addEventListener('click', function(e) {
+        savedRating = calculateRating(e);
+        if(ratingInput) ratingInput.value = savedRating;
+        renderInteractiveStars(savedRating);
+    });
+    renderInteractiveStars(0);
+}
+
+function validateReview() {
+    const ratingInput = document.getElementById('ratingValue');
+    if (!ratingInput || ratingInput.value === '0' || ratingInput.value === '') {
+        alert("You must select a star rating (1-5) before submitting.");
+        return false;
+    }
+    return true;
+}
+</script>
 </body>
 </html>
