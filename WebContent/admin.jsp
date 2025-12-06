@@ -35,6 +35,8 @@
     <div class="admin-nav">
         <a href="admin.jsp">Dashboard</a>
         <a href="admin_products.jsp">Manage Products</a>
+        <a href="admin_inventory.jsp">Inventory</a>
+        <a href="listorder.jsp">View All Orders</a>
         <a href="admin_orders.jsp">Manage Orders</a>
         <a href="admin_warehouses.jsp">Warehouses</a>
         <a href="admin_customers.jsp">Customers</a>

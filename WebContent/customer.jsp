@@ -58,9 +58,11 @@
 
     <div class="profile-container">
         
+        <!-- EDIT ACCOUNT INFO SECTION -->
         <div class="profile-box">
             <h3>Edit Profile</h3>
             <form action="update_profile.jsp" method="post">
+                <!-- IMPORTANT: Send the OLD userid so we know who to update -->
                 <input type="hidden" name="oldUserid" value="<%= rsCust.getString("userid") %>">
 
                 <label style="color:#FFFF00;">Username:</label>
@@ -83,6 +85,16 @@
                 
                 <label>City:</label>
                 <input type="text" name="city" value="<%= rsCust.getString("city") %>">
+
+                <!-- NEW FIELDS -->
+                <label>State/Province:</label>
+                <input type="text" name="state" value="<%= rsCust.getString("state") != null ? rsCust.getString("state") : "" %>">
+
+                <label>Zip/Postal Code:</label>
+                <input type="text" name="postalCode" value="<%= rsCust.getString("postalCode") != null ? rsCust.getString("postalCode") : "" %>">
+
+                <label>Country:</label>
+                <input type="text" name="country" value="<%= rsCust.getString("country") != null ? rsCust.getString("country") : "" %>">
                 
                 <label>Password:</label>
                 <input type="password" name="password" value="<%= rsCust.getString("password") %>">
@@ -91,6 +103,7 @@
             </form>
         </div>
 
+        <!-- LIST ORDERS SECTION -->
         <div class="orders-box">
             <h3>My Order History</h3>
             <table>

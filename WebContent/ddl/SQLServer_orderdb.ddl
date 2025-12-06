@@ -152,6 +152,9 @@ INSERT INTO category(categoryName) VALUES ('Miscellaneous');    -- ID 5
 
 -- 2. Insert Products with Matching Category IDs
 INSERT INTO product (productName, categoryId, productDesc, productPrice, productImageURL) VALUES
+
+('Crystal Lattice', 3, 'Science rules!', 9.99, 'img/1.gif'),
+
 ('Computer', 1, 'It''s a powerhouse, hitting clock speeds of 2MHz!', 11.23, 'img/3.gif'),
 ('Cellphone', 1, 'Indestructible. Probably includes Snake.', 15.00, 'img/8.gif'),
 ('Disk', 1, 'Meet your brand new image!', 53.42, 'img/10.gif'),
@@ -168,7 +171,6 @@ INSERT INTO product (productName, categoryId, productDesc, productPrice, product
 ('Seal', 2, 'This gets my seal of approval.', 5.55, 'img/29.gif'),
 ('Shark', 2, 'We''re gonna need a bigger boat.', 18.00, 'img/30.gif'),
 
-('Crystal Lattice', 3, 'Science rules!', 9.99, 'img/1.gif'),
 ('@ Symbol', 3, 'The future of communication!', 7.77, 'img/2.gif'),
 ('Cactus', 3, 'Youch, it''s sharp!', 6.66, 'img/6.gif'),
 ('Explosion', 3, 'Now I am become death, destroyer of worlds.', 25.00, 'img/13.gif'),

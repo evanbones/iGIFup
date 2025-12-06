@@ -11,7 +11,7 @@
 
     // Retrieve parameters
     String oldUserid = request.getParameter("oldUserid");
-    String newUserid = request.getParameter("userid"); // The value from the input box
+    String newUserid = request.getParameter("userid"); 
     
     String firstName = request.getParameter("firstName");
     String lastName = request.getParameter("lastName");
@@ -19,6 +19,12 @@
     String phonenum = request.getParameter("phonenum");
     String address = request.getParameter("address");
     String city = request.getParameter("city");
+    
+    // NEW PARAMETERS
+    String state = request.getParameter("state");
+    String postalCode = request.getParameter("postalCode");
+    String country = request.getParameter("country");
+    
     String password = request.getParameter("password");
 
     try (Connection con = DriverManager.getConnection(url, uid, pw)) {
@@ -30,15 +36,13 @@
             checkStmt.setString(1, newUserid);
             ResultSet rs = checkStmt.executeQuery();
             if (rs.next()) {
-                // Username is taken! Redirect back with error
                 response.sendRedirect("customer.jsp?msg=Username " + newUserid + " is already taken.");
                 return;
             }
         }
 
-        // 2. Perform Update (Including userid)
-        // We use 'oldUserid' in the WHERE clause to find the correct row
-        String sql = "UPDATE customer SET userid=?, firstName=?, lastName=?, email=?, phonenum=?, address=?, city=?, password=? WHERE userid=?";
+        // 2. Perform Update
+        String sql = "UPDATE customer SET userid=?, firstName=?, lastName=?, email=?, phonenum=?, address=?, city=?, state=?, postalCode=?, country=?, password=? WHERE userid=?";
         PreparedStatement pstmt = con.prepareStatement(sql);
         pstmt.setString(1, newUserid);
         pstmt.setString(2, firstName);
@@ -47,14 +51,18 @@
         pstmt.setString(5, phonenum);
         pstmt.setString(6, address);
         pstmt.setString(7, city);
-        pstmt.setString(8, password);
-        pstmt.setString(9, oldUserid); // Identify record by OLD name
+        
+        // Bind new fields
+        pstmt.setString(8, state);
+        pstmt.setString(9, postalCode);
+        pstmt.setString(10, country);
+        
+        pstmt.setString(11, password);
+        pstmt.setString(12, oldUserid); // Identify record by OLD name
         
         pstmt.executeUpdate();
         
         // 3. Update Session if username changed
-        // If we don't do this, the website will think they are still 'oldUserid' 
-        // which no longer exists in the DB, causing errors on page load.
         if (!newUserid.equals(oldUserid)) {
             session.setAttribute("authenticatedUser", newUserid);
         }
