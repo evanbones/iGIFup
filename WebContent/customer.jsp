@@ -5,21 +5,60 @@
 <head>
 <title>My Profile</title>
 <link rel="stylesheet" href="css/index.css">
+<link rel="stylesheet" href="css/listprod.css">
+
 <style>
-    .profile-container { display: flex; gap: 20px; flex-wrap: wrap; text-align: left; }
-    .profile-box, .orders-box {
-        background: rgba(0,0,0,0.6); border: 3px outset #00FFFF; padding: 20px; border-radius: 10px;
+    .profile-container { 
+        display: flex;
+        gap: 20px; 
+        flex-wrap: wrap; 
+        text-align: left; 
     }
+    
+    .profile-box, .orders-box {
+        background: rgba(0,0,0,0.6);
+        border: 4px groove #00ffff;
+        padding: 25px; 
+        border-radius: 20px;
+        box-shadow: 0 0 15px #330066;
+    }
+    
     .profile-box { flex: 1; min-width: 300px; }
     .orders-box { flex: 2; min-width: 400px; }
     
-    h3 { color: #FFFF00; border-bottom: 2px dashed #FF00FF; padding-bottom: 5px; }
-    input[type="text"], input[type="password"] {
-        width: 95%; background: #000; color: #FFF; border: 1px solid #00FF00; padding: 5px; margin-bottom: 8px;
+    h3 { 
+        color: #ffea00; 
+        text-shadow: 0 0 8px #ff00ff;
+        border-bottom: 2px dashed #FF00FF; 
+        padding-bottom: 10px;
+        margin-top: 0;
     }
-    table { width: 100%; border-collapse: collapse; color: #FFF; }
-    th { background: #330066; color: #00FF00; padding: 8px; }
-    td { border-bottom: 1px solid #555; padding: 8px; }
+
+    input[type="text"], input[type="password"] {
+        width: 100%; 
+        box-sizing: border-box;
+        padding: 10px;
+        margin-bottom: 15px;
+        background-color: #000022;
+        color: #00ffea;
+        border: 3px inset #00ffff;
+        border-radius: 10px;
+        font-family: "Comic Sans MS", cursive;
+        font-size: 16px;
+        outline: none;
+    }
+
+    input[type="text"]:focus, input[type="password"]:focus {
+        background-color: #000044;
+        box-shadow: 0 0 10px cyan;
+        border-color: #ffffff;
+    }
+
+    table { width: 100%; border-collapse: collapse; color: #FFF; margin-top: 10px; }
+    th { background: linear-gradient(90deg, #ff00ff, #9900ff); color: yellow; padding: 10px; text-shadow: 1px 1px 2px black; border-bottom: 2px solid cyan;}
+    td { border-bottom: 1px dashed #00ffff; padding: 10px; color: #c3f9ff; }
+    
+    label { font-weight: bold; color: #00ffcc; text-shadow: 0 0 5px #000; }
 </style>
 </head>
 <body>
@@ -34,9 +73,8 @@
         return;
     }
     
-    // Check for error/success messages from update page
     String msg = request.getParameter("msg");
-    if (msg != null) out.println("<p style='background:red; color:white; padding:5px;'>" + msg + "</p>");
+    if (msg != null) out.println("<div style='background:rgba(255,0,0,0.3); border:2px solid red; color:white; padding:10px; margin-bottom:15px; font-weight:bold;'>" + msg + "</div>");
 
     String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
     String uid = "sa";
@@ -48,7 +86,6 @@
         PreparedStatement pstmt = con.prepareStatement(sqlCust);
         pstmt.setString(1, user);
         ResultSet rsCust = pstmt.executeQuery();
-        
         if (rsCust.next()) {
             int custId = rsCust.getInt("customerId");
 %>
@@ -58,11 +95,9 @@
 
     <div class="profile-container">
         
-        <!-- EDIT ACCOUNT INFO SECTION -->
         <div class="profile-box">
             <h3>Edit Profile</h3>
             <form action="update_profile.jsp" method="post">
-                <!-- IMPORTANT: Send the OLD userid so we know who to update -->
                 <input type="hidden" name="oldUserid" value="<%= rsCust.getString("userid") %>">
 
                 <label style="color:#FFFF00;">Username:</label>
@@ -86,7 +121,6 @@
                 <label>City:</label>
                 <input type="text" name="city" value="<%= rsCust.getString("city") %>">
 
-                <!-- NEW FIELDS -->
                 <label>State/Province:</label>
                 <input type="text" name="state" value="<%= rsCust.getString("state") != null ? rsCust.getString("state") : "" %>">
 
@@ -99,11 +133,12 @@
                 <label>Password:</label>
                 <input type="password" name="password" value="<%= rsCust.getString("password") %>">
                 
-                <input type="submit" value="Update Info" style="margin-top:10px; cursor:pointer;">
+                <div style="text-align:center; margin-top: 15px;">
+                    <input type="submit" value="Update Info" class="btn">
+                </div>
             </form>
         </div>
 
-        <!-- LIST ORDERS SECTION -->
         <div class="orders-box">
             <h3>My Order History</h3>
             <table>
@@ -125,7 +160,7 @@
                         out.println("<td>" + rsOrd.getString("shiptoCity") + "</td>");
                         out.println("</tr>");
                     }
-                    if (!hasOrders) out.println("<tr><td colspan='4'>No orders found.</td></tr>");
+                    if (!hasOrders) out.println("<tr><td colspan='4' style='text-align:center; padding:20px;'>No orders found.</td></tr>");
                 %>
             </table>
         </div>
@@ -133,7 +168,7 @@
 <%
         }
     } catch (Exception e) {
-        out.println("Error: " + e);
+        out.println("<div style='color:red; background:pink; padding:10px;'>Error: " + e + "</div>");
     }
 %>
 </div>
