@@ -62,7 +62,7 @@
 String name = request.getParameter("productName");
 String categoryId = request.getParameter("categoryId");
 
-String sql = "SELECT p.productId, p.productName, p.productPrice, c.categoryName " +
+String sql = "SELECT p.productId, p.productName, p.productPrice, p.productImageURL, c.categoryName " +
              "FROM product p LEFT JOIN category c ON p.categoryId = c.categoryId WHERE 1=1";
 
 boolean hasNameFilter = (name != null && !name.trim().isEmpty());
@@ -98,7 +98,7 @@ try (Connection con = DriverManager.getConnection(url, uid, pw);
         } else {
             out.println("<h2>Available Products</h2>");
             out.println("<table>");
-            out.println("<tr><th>Product Name</th><th>Category</th><th>Price</th><th>Add to Cart</th></tr>");
+            out.println("<tr><th>Image</th><th>Product Name</th><th>Category</th><th>Price</th><th>Add to Cart</th></tr>");
             
             NumberFormat currFormat = NumberFormat.getCurrencyInstance();
             
@@ -112,8 +112,10 @@ try (Connection con = DriverManager.getConnection(url, uid, pw);
                 String formattedPrice = currFormat.format(price);
                 String productLink = "product.jsp?id=" + productId;
                 String addToCartLink = "addcart.jsp?id=" + productId + "&name=" + URLEncoder.encode(productName, "UTF-8") + "&price=" + price;
+                String imageURL = rs.getString("productImageURL");
                 
                 out.println("<tr>");
+                out.println("<td><img src='" + imageURL + "' alt='Product Image' style='width:50px;height:auto;'></td>");
                 out.println("<td class='product-name'><a href='" + productLink + "'>" + productName + "</a></td>");
                 out.println("<td>" + category + "</td>");
                 out.println("<td class='price'>" + formattedPrice + "</td>");

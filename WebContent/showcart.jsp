@@ -3,93 +3,144 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.sql.*" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <title>Your Shopping Cart</title>
 <link rel="stylesheet" href="css/listprod.css">
+<style>
+    .cart-qty-input {
+        background-color: #000022;
+        color: #00ffea;
+        border: 2px inset #00ffff;
+        border-radius: 5px;
+        padding: 5px;
+        font-family: "Comic Sans MS", cursive;
+        text-align: center;
+        width: 50px;
+        outline: none;
+    }
+    .cart-qty-input:focus {
+        border-color: #ffffff;
+        box-shadow: 0 0 5px cyan;
+    }
+
+    .btn-small {
+        background: linear-gradient(#ff00ff, #9900cc);
+        border: 2px outset white;
+        color: yellow;
+        font-weight: bold;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 12px;
+        text-shadow: 1px 1px 1px black;
+    }
+    .btn-small:hover {
+        background: linear-gradient(#00ffee, #0088aa);
+        color: black;
+        border: 2px inset white;
+    }
+</style>
+<script>
+    function validateUpdate(form) {
+        var qty = form.newQty.value;
+        if (isNaN(qty) || qty < 0) {
+            alert("Please enter a valid quantity.");
+            return false;
+        }
+        return true;
+    }
+</script>
 </head>
 <body>
 <div class="page-container">
 <%@ include file="header.jsp" %>
 
 <%
-// Get the current list of products
 @SuppressWarnings({"unchecked"})
 HashMap<String, ArrayList<Object>> productList = (HashMap<String, ArrayList<Object>>) session.getAttribute("productList");
 
-if (productList == null || productList.isEmpty())
-{	
+if (productList == null || productList.isEmpty()) {    
     out.println("<div class='gradient-container'>");
-    out.println("<div class='empty-state'>");
     out.println("<h1>Your Shopping Cart is Empty!</h1>");
-    out.println("<p>Start shopping to add items to your cart.</p>");
+    out.println("<p><a href='listprod.jsp' class='btn'>Start Shopping</a></p>");
     out.println("</div>");
-    out.println("<div class='action-links'>");
-    out.println("<a href='listprod.jsp' class='btn'>Start Shopping</a>");
-    out.println("</div>");
-    out.println("</div>");
-}
-else
-{
-	NumberFormat currFormat = NumberFormat.getCurrencyInstance();
+} else {
+    NumberFormat currFormat = NumberFormat.getCurrencyInstance();
+    String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+    String uid = "sa";
+    String pw = "304#sa#pw";
 
-	out.println("<h1>Your Shopping Cart</h1>");
-	out.print("<table><tr><th>Product ID</th><th>Product Name</th><th>Quantity</th>");
-	out.println("<th>Price</th><th>Subtotal</th></tr>");
+    try (Connection con = DriverManager.getConnection(url, uid, pw)) {
+    
+        out.println("<h1>Your Shopping Cart</h1>");
+        out.println("<table>");
+        out.println("<tr><th>Product ID</th><th>Product Name</th><th>Warehouse</th><th>Quantity</th><th>Price</th><th>Subtotal</th><th>Remove</th></tr>");
 
-	double total = 0;
-	Iterator<Map.Entry<String, ArrayList<Object>>> iterator = productList.entrySet().iterator();
-	while (iterator.hasNext()) 
-	{	
-        Map.Entry<String, ArrayList<Object>> entry = iterator.next();
-		ArrayList<Object> product = (ArrayList<Object>) entry.getValue();
-		if (product.size() < 4)
-		{
-			out.println("Expected product with four entries. Got: "+product);
-			continue;
-		}
-		
-		out.print("<tr><td>"+product.get(0)+"</td>");
-		out.print("<td>"+product.get(1)+"</td>");
+        double total = 0;
+        Iterator<Map.Entry<String, ArrayList<Object>>> iterator = productList.entrySet().iterator();
+        while (iterator.hasNext()) {    
+            Map.Entry<String, ArrayList<Object>> entry = iterator.next();
+            ArrayList<Object> product = (ArrayList<Object>) entry.getValue();
+            
+            String productId = (String) product.get(0);
+            String productName = (String) product.get(1);
+            double price = Double.parseDouble(product.get(2).toString());
+            int qty = Integer.parseInt(product.get(3).toString());
+            
+            String warehouseName = "Auto-Assign";
+            if (product.size() > 4 && product.get(4) != null) {
+                int wId = Integer.parseInt(product.get(4).toString());
+                if (wId > 0) {
+                    String wSql = "SELECT warehouseName FROM warehouse WHERE warehouseId = ?";
+                    try (PreparedStatement wStmt = con.prepareStatement(wSql)) {
+                        wStmt.setInt(1, wId);
+                        ResultSet rsW = wStmt.executeQuery();
+                        if (rsW.next()) {
+                            warehouseName = rsW.getString("warehouseName");
+                        }
+                    }
+                }
+            }
 
-		out.print("<td align=\"center\">"+product.get(3)+"</td>");
-		Object price = product.get(2);
-		Object itemqty = product.get(3);
-		double pr = 0;
-		int qty = 0;
-		
-		try
-		{
-			pr = Double.parseDouble(price.toString());
-		}
-		catch (Exception e)
-		{
-			out.println("Invalid price for product: "+product.get(0)+" price: "+price);
-		}
-		try
-		{
-			qty = Integer.parseInt(itemqty.toString());
-		}
-		catch (Exception e)
-		{
-			out.println("Invalid quantity for product: "+product.get(0)+" quantity: "+qty);
-		}		
+            out.print("<tr>");
+            out.print("<td>" + productId + "</td>");
+            out.print("<td>" + productName + "</td>");
+            out.print("<td style='font-size:0.9em; color:#ffff00;'>" + warehouseName + "</td>");
+            
+            out.print("<td align='center'>");
+            out.print("<form method='get' action='addcart.jsp' onsubmit='return validateUpdate(this);' style='margin:0;'>");
+            out.print("<input type='hidden' name='id' value='" + productId + "'>");
+            out.print("<input type='hidden' name='name' value='" + productName + "'>");
+            out.print("<input type='hidden' name='price' value='" + price + "'>");
+            out.print("<input type='hidden' name='action' value='update'>");
+            out.print("<input type='text' name='quantity' value='" + qty + "' class='cart-qty-input'> ");
+            out.print("<input type='submit' value='Update' class='btn-small'>");
+            out.print("</form>");
+            out.print("</td>");
+            
+            out.print("<td align='right'>" + currFormat.format(price) + "</td>");
+            out.print("<td align='right'>" + currFormat.format(price * qty) + "</td>");
+            out.print("<td align='center'><a href='addcart.jsp?id=" + productId + "&action=delete' style='color:red; font-weight:bold;'>Remove</a></td>");
+            
+            out.println("</tr>");
+            total = total + (price * qty);
+        }
+        
+        out.println("<tr class='total-row'><td colspan='7' align='right'><b>Order Total: " + currFormat.format(total) + "</b></td></tr>");
+        out.println("</table>");
 
-		out.print("<td align=\"right\">"+currFormat.format(pr)+"</td>");
-		out.print("<td align=\"right\">"+currFormat.format(pr*qty)+"</td></tr>");
-		out.println("</tr>");
-		total = total +pr*qty;
-	}
-	out.println("<tr class='total-row'><td colspan=\"4\" align=\"right\">Order Total</td>"
-			+"<td align=\"right\">"+currFormat.format(total)+"</td></tr>");
-	out.println("</table>");
+        out.println("<div class='action-links'>");
+        out.println("<a href='checkout.jsp' class='btn'>Proceed to Checkout</a>");
+        out.println("<a href='listprod.jsp' class='btn'>Continue Shopping</a>");
+        out.println("</div>");
 
-	out.println("<div class='action-links'>");
-	out.println("<a href=\"checkout.jsp\" class='add-cart-link'>Proceed to Checkout</a>"); // change classes later 
-	out.println("<a href=\"listprod.jsp\" class='add-cart-link'>Continue Shopping</a>");
-	out.println("</div>");
+    } catch (Exception e) {
+        out.println("<div class='error-message'>Error: " + e.getMessage() + "</div>");
+    }
 }
 %>
 </div>
