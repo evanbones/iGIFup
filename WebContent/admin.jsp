@@ -41,7 +41,6 @@
         .stats-container { flex: 1; background: rgba(0,0,0,0.5); padding: 20px; border: 2px solid #FF00FF; border-radius: 10px; }
         h2 { color: #00FFCC; border-bottom: 1px dashed #FFF; padding-bottom: 5px; }
         
-        /* Styled List for Quick Actions */
         .quick-actions-list {
             list-style: none;
             padding: 0;

@@ -79,7 +79,6 @@
 <div class="page-container">
     <%@ include file="header.jsp" %>
 
-    <%-- Security Check: Hardcoded for 'admin' user --%>
     <%
         String authUser = (String) session.getAttribute("authenticatedUser");
         if (authUser == null || !authUser.equals("admin")) { // admin is just the user with the username "admin"
@@ -99,7 +98,6 @@
     String uid = "sa";
     String pw = "304#sa#pw";
     
-    // --- ACTION HANDLER ---
     String action = request.getParameter("action");
     String msg = "";
     
