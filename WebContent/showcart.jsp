@@ -10,6 +10,40 @@
 <head>
 <title>Your Shopping Cart</title>
 <link rel="stylesheet" href="css/listprod.css">
+<style>
+    .cart-qty-input {
+        background-color: #000022;
+        color: #00ffea;
+        border: 2px inset #00ffff;
+        border-radius: 5px;
+        padding: 5px;
+        font-family: "Comic Sans MS", cursive;
+        text-align: center;
+        width: 50px;
+        outline: none;
+    }
+    .cart-qty-input:focus {
+        border-color: #ffffff;
+        box-shadow: 0 0 5px cyan;
+    }
+
+    .btn-small {
+        background: linear-gradient(#ff00ff, #9900cc);
+        border: 2px outset white;
+        color: yellow;
+        font-weight: bold;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 12px;
+        text-shadow: 1px 1px 1px black;
+    }
+    .btn-small:hover {
+        background: linear-gradient(#00ffee, #0088aa);
+        color: black;
+        border: 2px inset white;
+    }
+</style>
 <script>
     function validateUpdate(form) {
         var qty = form.newQty.value;
@@ -40,7 +74,6 @@ if (productList == null || productList.isEmpty()) {
     String uid = "sa";
     String pw = "304#sa#pw";
 
-    // Connect to DB to look up Warehouse names
     try (Connection con = DriverManager.getConnection(url, uid, pw)) {
     
         out.println("<h1>Your Shopping Cart</h1>");
@@ -49,7 +82,6 @@ if (productList == null || productList.isEmpty()) {
 
         double total = 0;
         Iterator<Map.Entry<String, ArrayList<Object>>> iterator = productList.entrySet().iterator();
-        
         while (iterator.hasNext()) {    
             Map.Entry<String, ArrayList<Object>> entry = iterator.next();
             ArrayList<Object> product = (ArrayList<Object>) entry.getValue();
@@ -59,12 +91,10 @@ if (productList == null || productList.isEmpty()) {
             double price = Double.parseDouble(product.get(2).toString());
             int qty = Integer.parseInt(product.get(3).toString());
             
-            // Check for Warehouse ID (stored at index 4)
             String warehouseName = "Auto-Assign";
             if (product.size() > 4 && product.get(4) != null) {
                 int wId = Integer.parseInt(product.get(4).toString());
                 if (wId > 0) {
-                    // Look up the name
                     String wSql = "SELECT warehouseName FROM warehouse WHERE warehouseId = ?";
                     try (PreparedStatement wStmt = con.prepareStatement(wSql)) {
                         wStmt.setInt(1, wId);
@@ -79,25 +109,22 @@ if (productList == null || productList.isEmpty()) {
             out.print("<tr>");
             out.print("<td>" + productId + "</td>");
             out.print("<td>" + productName + "</td>");
-            
-            // NEW COLUMN: WAREHOUSE
             out.print("<td style='font-size:0.9em; color:#ffff00;'>" + warehouseName + "</td>");
-
+            
             out.print("<td align='center'>");
             out.print("<form method='get' action='addcart.jsp' onsubmit='return validateUpdate(this);' style='margin:0;'>");
             out.print("<input type='hidden' name='id' value='" + productId + "'>");
             out.print("<input type='hidden' name='name' value='" + productName + "'>");
             out.print("<input type='hidden' name='price' value='" + price + "'>");
-            out.print("<input type='hidden' name='action' value='update'>"); 
-            out.print("<input type='text' name='quantity' value='" + qty + "' size='3' style='text-align:center;'> ");
+            out.print("<input type='hidden' name='action' value='update'>");
+            out.print("<input type='text' name='quantity' value='" + qty + "' class='cart-qty-input'> ");
             out.print("<input type='submit' value='Update' class='btn-small'>");
             out.print("</form>");
             out.print("</td>");
-
+            
             out.print("<td align='right'>" + currFormat.format(price) + "</td>");
             out.print("<td align='right'>" + currFormat.format(price * qty) + "</td>");
-            
-            out.print("<td align='center'><a href='addcart.jsp?id=" + productId + "&action=delete' style='color:red;'>Remove</a></td>");
+            out.print("<td align='center'><a href='addcart.jsp?id=" + productId + "&action=delete' style='color:red; font-weight:bold;'>Remove</a></td>");
             
             out.println("</tr>");
             total = total + (price * qty);
@@ -107,12 +134,12 @@ if (productList == null || productList.isEmpty()) {
         out.println("</table>");
 
         out.println("<div class='action-links'>");
-        out.println("<a href='checkout.jsp' class='add-cart-link'>Proceed to Checkout</a>");
-        out.println("<a href='listprod.jsp' class='add-cart-link'>Continue Shopping</a>");
+        out.println("<a href='checkout.jsp' class='btn'>Proceed to Checkout</a>");
+        out.println("<a href='listprod.jsp' class='btn'>Continue Shopping</a>");
         out.println("</div>");
-        
+
     } catch (Exception e) {
-        out.println("Error: " + e.getMessage());
+        out.println("<div class='error-message'>Error: " + e.getMessage() + "</div>");
     }
 }
 %>
