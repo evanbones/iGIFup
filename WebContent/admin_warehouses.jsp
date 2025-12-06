@@ -10,10 +10,10 @@
 <div class="page-container">
     <%@ include file="header.jsp" %>
     
-    <%-- Security Check --%>
+    <%-- Security Check: Hardcoded for 'admin' user --%>
     <%
         String authUser = (String) session.getAttribute("authenticatedUser");
-        if (authUser == null) {
+        if (authUser == null || !authUser.equals("admin")) { // admin is just the user with the username "admin"
             response.sendRedirect("login.jsp");
             return;
         }

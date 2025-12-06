@@ -64,7 +64,7 @@
     
     <%
         String authUser = (String) session.getAttribute("authenticatedUser");
-        if (authUser == null || !authUser.equals("admin")) {
+        if (authUser == null || !authUser.equals("admin")) { // admin is just the user with the username "admin"
             response.sendRedirect("login.jsp");
             return;
         }
