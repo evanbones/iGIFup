@@ -9,6 +9,16 @@
 <body>
 <div class="page-container">
     <%@ include file="header.jsp" %>
+
+    <%-- Security Check: Hardcoded for 'admin' user --%>
+    <%
+        String authUser = (String) session.getAttribute("authenticatedUser");
+        if (authUser == null || !authUser.equals("admin")) { // admin is just the user with the username "admin"
+            response.sendRedirect("login.jsp");
+            return;
+        }
+    %>
+
     <div style="text-align:center; margin-bottom:20px;"><a href="admin.jsp" class="btn">Back to Dashboard</a></div>
 
     <h1>Order Management</h1>
