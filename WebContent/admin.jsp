@@ -8,22 +8,62 @@
     <link rel="stylesheet" href="css/listprod.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .admin-nav { background: #330066; padding: 15px; border-bottom: 4px solid #FF00FF; margin-bottom: 20px; text-align: center; }
-        .admin-nav a { color: #FFFF00; margin: 0 15px; font-weight: bold; text-decoration: none; font-size: 18px; }
-        .admin-nav a:hover { text-decoration: underline; color: #00FFFF; }
+        .admin-nav { 
+            background: #330066;
+            padding: 15px; 
+            border-bottom: 4px solid #FF00FF; 
+            margin-bottom: 20px; 
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .admin-nav a { 
+            color: #FFFF00; 
+            font-weight: bold; 
+            text-decoration: none;
+            font-size: 18px; 
+            padding: 5px 10px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+        .admin-nav a:hover { 
+            color: #00FFFF;
+            text-shadow: 0 0 10px cyan;
+            border: 1px dashed #00FFFF;
+            border-radius: 5px;
+            background: rgba(0, 255, 255, 0.1);
+        }
+        
         .dashboard-grid { display: flex; gap: 20px; flex-wrap: wrap; }
         .chart-container { flex: 2; background: rgba(0,0,0,0.5); padding: 20px; border: 2px solid #00FFFF; border-radius: 10px; }
         .stats-container { flex: 1; background: rgba(0,0,0,0.5); padding: 20px; border: 2px solid #FF00FF; border-radius: 10px; }
         h2 { color: #00FFCC; border-bottom: 1px dashed #FFF; padding-bottom: 5px; }
+        
+        /* Styled List for Quick Actions */
+        .quick-actions-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .quick-actions-list li {
+            width: 100%;
+        }
+        .quick-actions-list .btn {
+            display: block;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 <div class="page-container">
     
-    <%-- Security Check: Hardcoded for 'admin' user --%>
     <%
         String authUser = (String) session.getAttribute("authenticatedUser");
-        // In a real app, check a database role. Here we just check the username.
         if (authUser == null || !authUser.equals("admin")) {
             response.sendRedirect("login.jsp");
             return;
@@ -40,7 +80,7 @@
         <a href="admin_orders.jsp">Manage Orders</a>
         <a href="admin_warehouses.jsp">Warehouses</a>
         <a href="admin_customers.jsp">Customers</a>
-        <a href="loaddata.jsp">Database Restore</a>
+        <a href="loaddata.jsp">Restore DB</a>
     </div>
 
     <h1>Administrator Dashboard</h1>
@@ -50,7 +90,6 @@
     String uid = "sa";
     String pw = "304#sa#pw";
 
-    // Variables for Chart Data
     StringBuilder dateLabels = new StringBuilder("[");
     StringBuilder salesData = new StringBuilder("[");
     
@@ -60,28 +99,23 @@
 
     try (Connection con = DriverManager.getConnection(url, uid, pw)) {
         
-        // 1. Get Daily Sales for Graph & Table
         String sql = "SELECT CAST(orderDate AS DATE) as orderDay, SUM(totalAmount) as dailyTotal, COUNT(*) as dailyCount " +
                      "FROM ordersummary GROUP BY CAST(orderDate AS DATE) ORDER BY orderDay ASC";
-        
         Statement stmt = con.createStatement();
         ResultSet rs = stmt.executeQuery(sql);
 
-        // We loop through result set to build JSON arrays for JS and calculate totals
         while (rs.next()) {
             String day = rs.getString("orderDay");
             double total = rs.getDouble("dailyTotal");
             int count = rs.getInt("dailyCount");
             
-            // Build JS Arrays: '2025-10-01', '2025-10-02'
             dateLabels.append("'").append(day).append("',");
             salesData.append(total).append(",");
             
             totalLifetimeSales += total;
             totalOrders += count;
         }
-        // Close JSON arrays
-        if (dateLabels.length() > 1) dateLabels.setLength(dateLabels.length() - 1); // remove last comma
+        if (dateLabels.length() > 1) dateLabels.setLength(dateLabels.length() - 1);
         if (salesData.length() > 1) salesData.setLength(salesData.length() - 1);
         
         dateLabels.append("]");
@@ -100,33 +134,14 @@
             <p style="font-size: 20px; color: #00FF00;">Total Orders: <%= totalOrders %></p>
             <hr>
             <h3>Quick Actions</h3>
-            <ul style="list-style: none; padding: 0;">
-                <li style="margin:10px 0;"><a href="admin_products.jsp" class="btn">Add New Product</a></li>
-                <li style="margin:10px 0;"><a href="admin_orders.jsp" class="btn">Ship Pending Orders</a></li>
+            <ul class="quick-actions-list">
+                <li><a href="admin_products.jsp" class="btn">Add / Edit Products</a></li>
+                <li><a href="admin_orders.jsp" class="btn">Ship Pending Orders</a></li>
+                <li><a href="admin_inventory.jsp" class="btn">Update Inventory</a></li>
             </ul>
         </div>
     </div>
     
-    <div style="margin-top: 30px;">
-        <h2>Detailed Sales Report</h2>
-        <table>
-            <tr><th>Date</th><th>Orders Count</th><th>Total Sales</th></tr>
-            <%
-                // Re-run query or use a cached list (Simplest: just query again for the table display order DESC)
-                String sqlTable = "SELECT CAST(orderDate AS DATE) as orderDay, SUM(totalAmount) as dailyTotal, COUNT(*) as dailyCount " +
-                                  "FROM ordersummary GROUP BY CAST(orderDate AS DATE) ORDER BY orderDay DESC";
-                ResultSet rsTable = stmt.executeQuery(sqlTable);
-                while(rsTable.next()) {
-            %>
-            <tr>
-                <td><%= rsTable.getString("orderDay") %></td>
-                <td align="center"><%= rsTable.getInt("dailyCount") %></td>
-                <td align="right"><%= currFormat.format(rsTable.getDouble("dailyTotal")) %></td>
-            </tr>
-            <% } %>
-        </table>
-    </div>
-
     <%
     } catch (Exception e) {
         out.println("<h3 class='error'>Error: " + e.getMessage() + "</h3>");

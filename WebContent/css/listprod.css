@@ -16,6 +16,30 @@ h1, h2 {
     font-weight: bold;
 }
 
+.btn {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 10px;
+    background: linear-gradient(#ff00ff, #9900cc);
+    border: 3px outset white;
+    color: yellow !important; /* Force yellow text */
+    text-decoration: none;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 0 5px #ff00ff;
+    transition: transform 0.2s;
+}
+
+.btn:hover {
+    background: linear-gradient(#00ffee, #0088aa);
+    color: black !important;
+    border: 3px inset white;
+    transform: scale(1.05);
+    text-decoration: none;
+}
+
 .search-container {
     padding: 25px;
     margin: 20px auto;
@@ -167,21 +191,4 @@ tr:hover {
 
 .action-links {
     margin-top: 20px;
-}
-
-.action-links .btn {
-    padding: 12px 20px;
-    border-radius: 10px;
-    background: linear-gradient(#ff00ff, #9900cc);
-    border: 3px outset white;
-    color: yellow;
-    text-decoration: none;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px black;
-}
-
-.action-links .btn:hover {
-    background: linear-gradient(#00ffee, #0088aa);
-    color: black;
-    border: 3px inset white;
 }
